@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="11.0.9" class="java.beans.XMLDecoder">
+ <object class="test.Config" id="Config0">
+  <void class="test.Config" method="getField">
+   <string>simulator_path</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <string>D:/FlightGear2020.3.8</string>
+   </void>
+  </void>
+  <void class="test.Config" method="getField">
+   <string>simulator_playback</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <string>playback_small.xml</string>
+   </void>
+  </void>
+  <void class="test.Config" method="getField">
+   <string>playback_speed_multiplayer</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <float>1.0</float>
+   </void>
+  </void>
+  <void class="test.Config" method="getField">
+   <string>simulator_input_port</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <int>6400</int>
+   </void>
+  </void>
+  <void class="test.Config" method="getField">
+   <string>simulator_output_port</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <int>5400</int>
+   </void>
+  </void>
+  <void class="test.Config" method="getField">
+   <string>init_sleep_seconds</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <int>30</int>
+   </void>
+  </void>
+ </object>
+</java>

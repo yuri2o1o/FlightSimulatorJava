@@ -1,123 +1,186 @@
 package test;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Scanner;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 //class the functions as an API for communication with the FlightGear flight simulator
 public class SimulatorAPI {
-	private static final String simulatorIp = "localhost";
-	private static final int siminport = 6400;
-	private static final int simoutport = 5400;
-	private static final int simulationdelay = 100;
-	private SocketIO simio = null;
+	public Config conf;
+	private static final int defcommdelay = 100; //the default delay (in ms) for communication with the simulator
+	private SocketIO simin = null;
+	
+	private Process simulator;
+	private Thread datainthread;
 	
 	//simulation data (updates in real time - readonly)
-	//flight controls
-	public float aileron = 0;
-	public float elevator = 0;
-	public float rudder = 0; 
-	
-	//engines
-	public float throttle1 = 0;
-	public float throttle2 = 0;
-	
-	//position
-	public float altitude = 0;
-	
-	//orientation
-	public float roll = 0;
-	public float pitch = 0;
-	public float heading = 0;
-	
-	//velocities
-	public float airspeed = 0;
-	
-	//prefixes
-	private float[] paramdata = new float[10];
-	private static final int[] prefixes = { 0, 1, 2, 6, 7, 16, 17, 18, 19, 21 };
+	private List<FlightParam> flightdata = new ArrayList<>();
 	
 	/*
-	 * reads flight parameters from socket into paramdata
-	 * out (via paramdata): float[] - the (hard-coded) flight parameters by order (also hard-coded)
+	 * Reads flight parameters from socket into flightdata
+	 * out (via flightdata): float[] - the flight parameters by order (as written in playback XML)
 	 */
 	private void updateSimParamDataFromSocket() {
-		String[] line = simio.readln().split(","); //read a parameter line from the socket and split it
-		for (int i = 0; i < paramdata.length; i++)
-			paramdata[i] = Float.parseFloat(line[prefixes[i]]); //parse the parameters by taking the offset (hard-coded, as ordered in playback FlightGear config XML)
+		String[] line = simin.readln().split(","); //read a parameter line from the socket and split it
+		for (int i = 0; i < line.length; i++) {
+			try {
+				flightdata.get(i).value = Float.parseFloat(line[i]); //parse the parameters as ordered in playback XML
+			} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) { flightdata.get(i).value = -9999; };
+		}
 	}
 	
-	/*
-	 * for ease of access - assign paramdata values to easy-to-use public members (hard-coded)
-	 */
-	private void updateSimParameters() {
-		//flight controls
-		aileron = paramdata[0];
-		elevator = paramdata[1];
-		rudder = paramdata[2];
-		
-		//engines
-		throttle1 = paramdata[3];
-		throttle2 = paramdata[4];
-		
-		//position
-		altitude = paramdata[5];
-		
-		//orientation
-		roll = paramdata[6];
-		pitch = paramdata[7];
-		heading = paramdata[8];
-		
-		//velocities
-		airspeed = paramdata[9];
-	}
 	
 	/*
-	 * agent function to handle real-time updates for the flight parameters (should be run as thread)
+	 * Agent function to handle real-time updates for the flight parameters (should be run as thread)
 	 */
 	private void updateSimDataAgent() {
 		while (true) {
 			updateSimParamDataFromSocket();
-			updateSimParameters();
-			try { Thread.sleep(simulationdelay); } catch (InterruptedException e) { continue; }
+			try { Thread.sleep((int)(defcommdelay*(1/conf.playback_speed_multiplayer))); } catch (InterruptedException e) { continue; }
 		}
 	}
 	
 	/*
-	 * init function that waits for simulator connection and starts the updateSimDataAgent
+	 * Function that initiates the flightdata list (via the playback XML)
 	 */
-	public void init() throws UnknownHostException, IOException {
-		simio = new SocketIO(siminport);
-		new Thread(()->updateSimDataAgent()).start();
+	private void initFlightDataFromXML() {
+		//read playback xml into Document and parse it
+		File playback = new File(conf.simulator_playback);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();  
+		DocumentBuilder db;
+		Document doc;
+		try {
+			db = dbf.newDocumentBuilder();
+			doc = db.parse(playback);
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			return;
+		}
+		doc.getDocumentElement().normalize();
+		
+		//go over all chunks in output
+		NodeList nodeList = ((Element)(doc.getElementsByTagName("output").item(0))).getElementsByTagName("chunk");
+		for (int i = 0; i < nodeList.getLength(); i++)
+		{
+			Node node = nodeList.item(i);
+			Element e = (Element) node;
+			//for each chunk add a FlightParam to the list (with the chunk's name and an initial value)
+			flightdata.add(new FlightParam(e.getElementsByTagName("name").item(0).getTextContent(), -9999));
+		}
 	}
 	
 	/*
-	 * finalizes the API (releases sockets and data)
+	 * Function that copies a playback file from the project's directory to the simulators protocol path
+	 */
+	private void copyPlaybackToSimulator() throws IOException {
+		//create the files
+		File sourceFile = new File(conf.simulator_playback);
+		File destFile = new File(conf.simulator_path + "/data/protocol/playback_small.xml");
+		if (!sourceFile.exists())
+	        return;
+	    if (!destFile.exists())
+	        destFile.createNewFile();
+	    
+	    //transfer the data
+	    FileChannel source = null;
+	    FileChannel destination = null;
+	    source = new FileInputStream(sourceFile).getChannel();
+	    destination = new FileOutputStream(destFile).getChannel();
+	    if (destination != null && source != null)
+	        destination.transferFrom(source, 0, source.size());
+	    
+	    //close the files
+	    if (source != null)
+	        source.close();
+	    if (destination != null)
+	        destination.close();
+	}
+	
+	/*
+	 * Function to start the FlightGear simulator
+	 */
+	private void startSimulator() throws UnknownHostException, IOException, InterruptedException {
+		copyPlaybackToSimulator();
+		//start the simulator process in it's own directory, with arguments to open sockets for communication to it
+		ProcessBuilder pb = new ProcessBuilder(conf.simulator_path + "/bin/fgfs.exe", "--generic=socket,in,2,127.0.0.1," + conf.simulator_output_port + ",tcp,playback_small", "--generic=socket,out,2,127.0.0.1," + conf.simulator_input_port + ",tcp,playback_small", "--fdm=null");
+		pb.directory(new File(conf.simulator_path + "/bin"));
+		simulator = pb.start();
+	}
+	
+	public SimulatorAPI(String configxmlpath) throws FileNotFoundException {
+		conf = Config.readConfigFromXML("config.xml");
+		initFlightDataFromXML();
+	}
+	
+	/*
+	 * Init function that waits for simulator connection and starts the updateSimDataAgent
+	 */
+	public void init() throws UnknownHostException, IOException, InterruptedException {
+		startSimulator(); //start the simulator
+		
+		//open server socket, wait for simulator to finish starting, than start the update thread
+		simin = new SocketIO(conf.simulator_input_port);
+		Thread.sleep(conf.init_sleep_seconds*1000);
+		datainthread = new Thread(()->updateSimDataAgent());
+		datainthread.start();
+	}
+	
+	/*
+	 * Finalizes the API (releases sockets and threads)
 	 */
 	public void finalize() {
-		simio.close();
+		datainthread.stop();
+		simin.close();
+		simulator.destroy();
 	}
 	
 	/*
-	 * utility function used to send flight data from a flight data CSV to the simulator
+	 * Utility function used to send flight data from a flight data CSV to the simulator
 	 * in: filename - the name of the CSV file to send
 	 * out (via socket to simulator): the given CSV's data
 	 */
-	public static void sendFileToSimulator(String filename) throws UnknownHostException, IOException, InterruptedException {
+	public void sendFileToSimulator(String filename) throws UnknownHostException, IOException, InterruptedException {
 		//open socket to simulator out port
-		SocketIO comm = new SocketIO(simulatorIp, simoutport);
+		SocketIO simout = new SocketIO("localhost", conf.simulator_output_port);
 		BufferedReader in = new BufferedReader(new FileReader(filename));
 		
 		//read each line from the file and send it to the simulator (via socket)
 		String line;
 		while((line = in.readLine()) != null) {
-			comm.writeln(line);
-			Thread.sleep(simulationdelay);
+			simout.writeln(line);
+			Thread.sleep((int)(defcommdelay*(1/conf.playback_speed_multiplayer)));
 		}
 		
 		in.close();
-		comm.close();
+		simout.close();
+	}
+	
+	/*
+	 * Function to get a flight parameter by name (as written in the playback XML)
+	 * in: name - the name of the parameter
+	 * out: float - the current (real-time) value of the parameter
+	 */
+	public float getFlightParameter(String name) {
+		for (FlightParam param : flightdata)
+			if (param.name.equals(name))
+				return param.value;
+		return 0;
 	}
 }
