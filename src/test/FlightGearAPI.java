@@ -1,14 +1,13 @@
 package test;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +24,14 @@ import org.xml.sax.SAXException;
 //Class that contains the functions as an API for communication with the FlightGear flight simulator
 public class FlightGearAPI implements SimulatorAPI {
 	public Config conf;
-	private static final int defcommdelay = 100; //the default delay (in ms) for communication with the simulator
+	public static final int defcommdelay = 100; //the default delay (in ms) for communication with the simulator
 	private SocketIO simin = null;
 	
 	private Process simulator;
 	private Thread datainthread;
+	
+	private FlightSimulationDataHandler datahandler;
+	private Thread dataoutthread;
 	
 	//simulation data (updates in real time - readonly)
 	private List<FlightParam> flightdata = new ArrayList<>();
@@ -54,7 +56,7 @@ public class FlightGearAPI implements SimulatorAPI {
 	private void updateSimDataAgent() {
 		while (true) {
 			updateSimParamDataFromSocket();
-			try { Thread.sleep((int)(defcommdelay*(1/conf.playback_speed_multiplayer))); } catch (InterruptedException e) { continue; }
+			try { Thread.sleep(defcommdelay); } catch (InterruptedException e) { continue; }
 		}
 	}
 	
@@ -139,31 +141,39 @@ public class FlightGearAPI implements SimulatorAPI {
 	 */
 	@Override
 	public void finalize() {
+		dataoutthread.stop();
+		datahandler.close();
 		datainthread.stop();
 		simin.close();
 		simulator.destroy();
 	}
 	
 	/*
-	 * Utility function used to send flight data from a flight data CSV to the simulator
+	 * Function to load CSV flight data to the system
 	 * in: filename - the name of the CSV file to send
-	 * out (via socket to simulator): the given CSV's data
 	 */
 	@Override
-	public void sendFileToSimulator(String filename) throws UnknownHostException, IOException, InterruptedException {
+	public void loadFlightDataFromCSV(String filename) throws UnknownHostException, IOException {
 		//open socket to simulator out port
 		SocketIO simout = new SocketIO("localhost", conf.simulator_output_port);
-		BufferedReader in = new BufferedReader(new FileReader(filename));
 		
-		//read each line from the file and send it to the simulator (via socket)
-		String line;
-		while((line = in.readLine()) != null) {
-			simout.writeln(line);
-			Thread.sleep((int)(defcommdelay*(1/conf.playback_speed_multiplayer)));
-		}
-		
-		in.close();
-		simout.close();
+		//read all lines from the CSV and instantiate datahandler
+		datahandler = new FlightSimulationDataHandler(simout, Files.readString(Path.of(filename)).split("\n"), conf.playback_speed_multiplayer);
+	}
+	
+	/*
+	 * Function to send (preloaded) flight data to the simulator
+	 */
+	@Override
+	public void sendFlightDataToSimulator() {
+		dataoutthread = new Thread(()->{
+			try {
+				datahandler.sendFlightDataToSimulatorAgent();
+			} catch (InterruptedException e) {
+				return;
+			}
+		});
+		dataoutthread.start();
 	}
 	
 	/*
@@ -181,6 +191,16 @@ public class FlightGearAPI implements SimulatorAPI {
 	
 	@Override
 	public void setSimulationSpeed(float speedmuliplayer) {
-		conf.playback_speed_multiplayer = speedmuliplayer;
+		datahandler.setFlightSpeed(speedmuliplayer);
+	}
+	
+	@Override
+	public void setCurrentFlightTime(long currenttimems) {
+		datahandler.setCurrentFlightTime(currenttimems);
+	}
+	
+	@Override
+	public long getFlightLength() {
+		return datahandler.getFlightLength();
 	}
 }

@@ -7,7 +7,10 @@ import java.net.UnknownHostException;
 public interface SimulatorAPI {
 	public void start() throws UnknownHostException, IOException, InterruptedException;
 	public void finalize();
-	public void sendFileToSimulator(String filename) throws UnknownHostException, IOException, InterruptedException;
+	public void loadFlightDataFromCSV(String filename) throws UnknownHostException, IOException;
 	public float getFlightParameter(String paramname);
 	public void setSimulationSpeed(float speedmuliplayer);
+	void sendFlightDataToSimulator();
+	void setCurrentFlightTime(long currenttimems);
+	long getFlightLength();
 }
