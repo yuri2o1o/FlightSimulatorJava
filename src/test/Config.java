@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+//A config class to contain any global configurations for our app
 public class Config {
 	//global parameters
 	public String simulator_path;

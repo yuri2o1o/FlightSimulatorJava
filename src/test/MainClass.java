@@ -8,10 +8,10 @@ public class MainClass {
 		System.out.println("Connecting to flight simulator...");
 		SimulatorAPI simcomm;
 		try {
-			simcomm = new SimulatorAPI("config.xml");
-			simcomm.init();
+			simcomm = new FlightGearAPI("config.xml");
+			simcomm.start();
 		} catch (IOException | InterruptedException e1) {
-			e1.printStackTrace();
+			System.out.println("ERROR: Could not read config / playback XML");
 			return;
 		}
 		
@@ -22,7 +22,7 @@ public class MainClass {
 			try {
 				simcomm.sendFileToSimulator("reg_flight.csv");
 			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
+				System.out.println("ERROR: Could not send flight data XML to simulator");
 			}
 		});
 		flightdataouthread.start();
@@ -32,11 +32,11 @@ public class MainClass {
 		while (simcomm.getFlightParameter("altitude-ft") < 250)
 			System.out.println(simcomm.getFlightParameter("altitude-ft"));
 		
-		simcomm.conf.playback_speed_multiplayer = 5;
+		simcomm.setSimulationSpeed(5);
 		while (simcomm.getFlightParameter("altitude-ft") < 500)
 			System.out.println(simcomm.getFlightParameter("altitude-ft"));
 		
-		simcomm.conf.playback_speed_multiplayer = 0.2f;
+		simcomm.setSimulationSpeed(0.2f);
 		while (simcomm.getFlightParameter("altitude-ft") < 550)
 			System.out.println(simcomm.getFlightParameter("altitude-ft"));
 		

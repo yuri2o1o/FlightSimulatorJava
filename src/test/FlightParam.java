@@ -1,8 +1,6 @@
 package test;
 
-/*
- * A wrapper class that contains a flight parameter
- */
+//A wrapper class that contains a flight parameter
 public class FlightParam {
 	public String name;
 	public float value;
