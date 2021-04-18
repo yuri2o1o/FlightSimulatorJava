@@ -1,4 +1,4 @@
-package test;
+package simpack;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class FlightGearProcess extends Process {
 	 *     outport - the port we will send flight data to
 	 */
 	public FlightGearProcess(String path, int inport, int outport) throws IOException {
-		ProcessBuilder pb = new ProcessBuilder(path + "/bin/fgfs.exe", "--generic=socket,in," + (FlightGearAPI.defcommdelay / 10) + ",127.0.0.1," + outport + ",tcp,playback_small", "--generic=socket,out,"  + (FlightGearAPI.defcommdelay / 10) + ",127.0.0.1," + inport + ",tcp,playback_small", "--fdm=null");
+		ProcessBuilder pb = new ProcessBuilder(path + "/bin/fgfs.exe", "--generic=socket,in," + (int)(FlightGearAPI.defcommdelay / 10) + ",127.0.0.1," + outport + ",tcp,playback_small", "--generic=socket,out,"  + (int)(FlightGearAPI.defcommdelay / 10) + ",127.0.0.1," + inport + ",tcp,playback_small", "--fdm=null");
 		pb.directory(new File(path + "/bin"));
 		flightgear = pb.start();
 	}

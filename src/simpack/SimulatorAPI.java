@@ -1,4 +1,4 @@
-package test;
+package simpack;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -13,4 +13,5 @@ public interface SimulatorAPI {
 	void sendFlightDataToSimulator();
 	void setCurrentFlightTime(long currenttimems);
 	long getFlightLength();
+	long getCurrentFlightTime();
 }

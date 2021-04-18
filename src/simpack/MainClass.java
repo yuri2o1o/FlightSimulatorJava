@@ -1,6 +1,9 @@
-package test;
+package simpack;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class MainClass {
 	public static void main(String[] args) {
@@ -20,13 +23,13 @@ public class MainClass {
 		//use API to send flight data
 		try {
 			simcomm.loadFlightDataFromCSV("reg_flight.csv");
-			System.out.println("Flight length is: " + (simcomm.getFlightLength()/1000) + " seconds");
+			System.out.println("Flight length is: " + Utils.msToTimeString(simcomm.getFlightLength()));
 			simcomm.sendFlightDataToSimulator();
 		} catch (IOException e) {
 			System.out.println("ERROR: Could not send flight data XML to simulator");
 		}
 		
-		try { Thread.sleep(3*1000); /*sleep 3 seconds then start*/ } catch (InterruptedException e) {}
+		try { Thread.sleep(3*1000); } catch (InterruptedException e) {} //sleep 3 seconds before start so we can read the output
 		
 		System.out.println("Recieving data:");
 		//test the API by constantly printing our altitude, meanwhile testing changing the simulation speed
@@ -35,7 +38,12 @@ public class MainClass {
 		
 		//increase speed and test the API
 		simcomm.setSimulationSpeed(5);
-		while (simcomm.getFlightParameter("altitude-ft") < 1000)
+		while (simcomm.getFlightParameter("altitude-ft") < 600)
+			System.out.println(simcomm.getFlightParameter("altitude-ft"));
+		
+		//decrease speed and test the API
+		simcomm.setSimulationSpeed(0.2f);
+		while (simcomm.getFlightParameter("altitude-ft") < 650)
 			System.out.println(simcomm.getFlightParameter("altitude-ft"));
 		
 		simcomm.setSimulationSpeed(1); //reset time to normal

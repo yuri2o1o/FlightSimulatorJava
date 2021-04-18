@@ -1,4 +1,4 @@
-package test;
+package simpack;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -15,6 +15,7 @@ public class Config {
 	
 	//argument parameters
 	public float playback_speed_multiplayer;
+	public int playback_sample_rate_ms;
 	public int simulator_input_port;
 	public int simulator_output_port;
 	

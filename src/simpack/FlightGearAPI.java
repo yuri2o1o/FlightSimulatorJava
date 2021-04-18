@@ -1,4 +1,4 @@
-package test;
+package simpack;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 //Class that contains the functions as an API for communication with the FlightGear flight simulator
 public class FlightGearAPI implements SimulatorAPI {
 	public Config conf;
-	public static final int defcommdelay = 100; //the default delay (in ms) for communication with the simulator
+	public static final int defcommdelay = 50; //the default delay (in ms) for communication with the simulator
 	private SocketIO simin = null;
 	
 	private Process simulator;
@@ -158,7 +158,7 @@ public class FlightGearAPI implements SimulatorAPI {
 		SocketIO simout = new SocketIO("localhost", conf.simulator_output_port);
 		
 		//read all lines from the CSV and instantiate datahandler
-		datahandler = new FlightSimulationDataHandler(simout, Files.readString(Path.of(filename)).split("\n"), conf.playback_speed_multiplayer);
+		datahandler = new FlightSimulationDataHandler(simout, Files.readString(Path.of(filename)).split("\n"), conf.playback_sample_rate_ms, conf.playback_speed_multiplayer);
 	}
 	
 	/*
@@ -202,5 +202,10 @@ public class FlightGearAPI implements SimulatorAPI {
 	@Override
 	public long getFlightLength() {
 		return datahandler.getFlightLength();
+	}
+	
+	@Override
+	public long getCurrentFlightTime() {
+		return datahandler.getCurrentFlightTime();
 	}
 }

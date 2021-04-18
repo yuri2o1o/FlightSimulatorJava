@@ -1,4 +1,4 @@
-package test;
+package simpack;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

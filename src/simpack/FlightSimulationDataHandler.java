@@ -1,4 +1,4 @@
-package test;
+package simpack;
 
 public class FlightSimulationDataHandler {
 	private SocketIO simout;
@@ -6,13 +6,15 @@ public class FlightSimulationDataHandler {
 	
 	private long flightlenms = 0; //the length of the flight in ms
 	private long currenttimems = 0; //the current flight time in ms
+	private float timecorrection = 0; //inner value used to convert times to match the sample rate
 	private int timejumpms = FlightGearAPI.defcommdelay; //the amount of ms to skip each iteration (used for flight speed change)
 	
-	public FlightSimulationDataHandler(SocketIO nsimout, String[] nflightdata, float speedmultiplayer) {
+	public FlightSimulationDataHandler(SocketIO nsimout, String[] nflightdata, int samplerate, float speedmultiplayer) {
 		simout = nsimout;
 		flightdata = nflightdata;
-		timejumpms /= (1/speedmultiplayer);
-		flightlenms = flightdata.length * FlightGearAPI.defcommdelay;
+		timecorrection = (float)FlightGearAPI.defcommdelay / (float)samplerate;
+		timejumpms *= speedmultiplayer * timecorrection;
+		flightlenms = flightdata.length * samplerate;
 	}
 	
 	/*
@@ -22,13 +24,13 @@ public class FlightSimulationDataHandler {
 	 */
 	public void sendFlightDataToSimulatorAgent() throws InterruptedException {
 		for (; currenttimems < flightlenms; currenttimems += timejumpms) {
-			simout.writeln(flightdata[(int)(currenttimems/FlightGearAPI.defcommdelay)]);
+			simout.writeln(flightdata[(int)((currenttimems/FlightGearAPI.defcommdelay)*timecorrection)]);
 			Thread.sleep(FlightGearAPI.defcommdelay);
 		}
 	}
 	
 	public void setFlightSpeed(float speedmultiplayer) {
-		timejumpms = (int)(FlightGearAPI.defcommdelay / (1/speedmultiplayer));
+		timejumpms = (int)(FlightGearAPI.defcommdelay * (speedmultiplayer*timecorrection));
 	}
 	
 	public long getFlightLength() {
@@ -37,6 +39,10 @@ public class FlightSimulationDataHandler {
 	
 	public void setCurrentFlightTime(long ncurrenttimems) {
 		currenttimems = ncurrenttimems;
+	}
+	
+	public long getCurrentFlightTime() {
+		return currenttimems;
 	}
 	
 	public void close() { simout.close(); }
