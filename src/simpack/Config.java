@@ -12,6 +12,7 @@ public class Config {
 	//global parameters
 	public String simulator_path;
 	public String simulator_playback;
+	public String flight_data_csv;
 	
 	//argument parameters
 	public float playback_speed_multiplayer;

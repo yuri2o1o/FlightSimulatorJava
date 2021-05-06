@@ -1,17 +1,16 @@
 package simpack;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class MainClass {
 	public static void main(String[] args) {
 		//start simulator
 		System.out.println("Connecting to flight simulator...");
 		SimulatorAPI simcomm;
+		Config conf;
 		try {
-			simcomm = new FlightGearAPI("config.xml");
+			conf = Config.readConfigFromXML("config.xml");
+			simcomm = new FlightGearAPI(conf);
 			simcomm.start();
 		} catch (IOException | InterruptedException e1) {
 			System.out.println("ERROR: Could not read config / playback XML");
@@ -22,7 +21,7 @@ public class MainClass {
 		System.out.println("Starting flight emulation...");
 		//use API to send flight data
 		try {
-			simcomm.loadFlightDataFromCSV("reg_flight.csv");
+			simcomm.loadFlightDataFromCSV(conf.flight_data_csv);
 			System.out.println("Flight length is: " + Utils.msToTimeString(simcomm.getFlightLength()));
 			simcomm.sendFlightDataToSimulator();
 		} catch (IOException e) {

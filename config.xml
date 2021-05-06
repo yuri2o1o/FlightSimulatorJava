@@ -16,6 +16,13 @@
    </void>
   </void>
   <void class="simpack.Config" method="getField">
+   <string>flight_data_csv</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <string>reg_flight.csv</string>
+   </void>
+  </void>
+  <void class="simpack.Config" method="getField">
    <string>playback_speed_multiplayer</string>
    <void method="set">
     <object idref="Config0"/>

@@ -115,8 +115,8 @@ public class FlightGearAPI implements SimulatorAPI {
 	        destination.close();
 	}
 	
-	public FlightGearAPI(String configxmlpath) throws IOException {
-		conf = Config.readConfigFromXML("config.xml");
+	public FlightGearAPI(Config nconf) throws IOException {
+		conf = nconf;
 		initFlightDataFromXML();
 		copyPlaybackToSimulator();
 	}
