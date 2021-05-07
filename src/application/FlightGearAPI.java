@@ -1,4 +1,4 @@
-package simpack;
+package application;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,6 @@ import org.xml.sax.SAXException;
 
 //Class that contains the functions as an API for communication with the FlightGear flight simulator
 public class FlightGearAPI implements SimulatorAPI {
-	public Config conf;
 	public static final int defcommdelay = 50; //the default delay (in ms) for communication with the simulator
 	private SocketIO simin = null;
 	
@@ -65,7 +64,7 @@ public class FlightGearAPI implements SimulatorAPI {
 	 */
 	private void initFlightDataFromXML() {
 		//read playback xml into Document and parse it
-		File playback = new File(conf.simulator_playback);
+		File playback = new File(Main.conf.simulator_playback);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();  
 		DocumentBuilder db;
 		Document doc;
@@ -93,8 +92,8 @@ public class FlightGearAPI implements SimulatorAPI {
 	 */
 	private void copyPlaybackToSimulator() throws IOException {
 		//create the files
-		File sourceFile = new File(conf.simulator_playback);
-		File destFile = new File(conf.simulator_path + "/data/protocol/playback_small.xml");
+		File sourceFile = new File(Main.conf.simulator_playback);
+		File destFile = new File(Main.conf.simulator_path + "/data/protocol/playback_small.xml");
 		if (!sourceFile.exists())
 	        return;
 	    if (!destFile.exists())
@@ -115,8 +114,7 @@ public class FlightGearAPI implements SimulatorAPI {
 	        destination.close();
 	}
 	
-	public FlightGearAPI(Config nconf) throws IOException {
-		conf = nconf;
+	public FlightGearAPI() throws IOException {
 		initFlightDataFromXML();
 		copyPlaybackToSimulator();
 	}
@@ -127,11 +125,11 @@ public class FlightGearAPI implements SimulatorAPI {
 	@Override
 	public void start() throws UnknownHostException, IOException, InterruptedException {
 		//start the simulator
-		simulator = new FlightGearProcess(conf.simulator_path, conf.simulator_input_port, conf.simulator_output_port);
+		simulator = new FlightGearProcess(Main.conf.simulator_path, Main.conf.simulator_input_port, Main.conf.simulator_output_port);
 		
 		//open server socket, wait for simulator to finish starting, than start the update thread
-		simin = new SocketIO(conf.simulator_input_port);
-		Thread.sleep(conf.init_sleep_seconds*1000);
+		simin = new SocketIO(Main.conf.simulator_input_port);
+		Thread.sleep(Main.conf.init_sleep_seconds*1000);
 		datainthread = new Thread(()->updateSimDataAgent());
 		datainthread.start();
 	}
@@ -155,10 +153,10 @@ public class FlightGearAPI implements SimulatorAPI {
 	@Override
 	public void loadFlightDataFromCSV(String filename) throws UnknownHostException, IOException {
 		//open socket to simulator out port
-		SocketIO simout = new SocketIO("localhost", conf.simulator_output_port);
+		SocketIO simout = new SocketIO("localhost", Main.conf.simulator_output_port);
 		
 		//read all lines from the CSV and instantiate datahandler
-		datahandler = new FlightSimulationDataHandler(simout, Files.readString(Path.of(filename)).split("\n"), conf.playback_sample_rate_ms, conf.playback_speed_multiplayer);
+		datahandler = new FlightSimulationDataHandler(simout, new String (Files.readAllBytes(Paths.get(filename))).split("\n"), Main.conf.playback_sample_rate_ms, Main.conf.playback_speed_multiplayer);
 	}
 	
 	/*

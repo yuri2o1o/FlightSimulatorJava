@@ -1,4 +1,4 @@
-package simpack;
+package application;
 
 //A wrapper class that contains a flight parameter
 public class FlightParam {

@@ -1,4 +1,4 @@
-package simpack;
+package application;
 
 public class FlightSimulationDataHandler {
 	private SocketIO simout;
