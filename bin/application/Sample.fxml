@@ -9,15 +9,47 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.shape.Circle?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.JavaFXController">
    <center>
       <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <MediaView fitHeight="200.0" fitWidth="200.0" />
             <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="200.0" snapToPixel="false">
                <children>
+                  <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="155.0" translateX="-220.0">
+                     <children>
+                        <Slider fx:id="throttleSlider" blockIncrement="0.1" disable="true" max="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="130.0" prefWidth="14.0">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Slider>
+                        <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="138.0" prefWidth="138.0">
+                           <children>
+                              <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="119.0" prefWidth="122.0">
+                                 <VBox.margin>
+                                    <Insets left="8.0" top="5.0" />
+                                 </VBox.margin>
+                                 <children>
+                                    <Circle fx:id="joystickCircle" fill="#7ebcee" radius="25.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.4">
+                                       <VBox.margin>
+                                          <Insets left="32.0" top="35.0" />
+                                       </VBox.margin>
+                                    </Circle>
+                                 </children>
+                              </VBox>
+                              <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="14.0" prefWidth="130.0">
+                                 <VBox.margin>
+                                    <Insets left="5.0" />
+                                 </VBox.margin>
+                                 <children>
+                                    <Slider fx:id="rudderSlider" blockIncrement="0.1" disable="true" max="1.0" min="-1.0" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
                   <HBox prefHeight="40.0" prefWidth="200.0">
                      <children>
                         <Button fx:id="openButton" mnemonicParsing="false" onAction="#onClickOpen" prefHeight="25.0" prefWidth="447.0" text="Open">

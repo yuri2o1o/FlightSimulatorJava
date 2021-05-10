@@ -15,6 +15,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -58,8 +59,8 @@ public class JavaFXController {
 		onMouseMovedSpeedSlider();
 		
 		//set current time updater
-		Timer timer = new Timer();
-	    timer.scheduleAtFixedRate(new TimerTask() {
+		Timer timetimer = new Timer();
+		timetimer.scheduleAtFixedRate(new TimerTask() {
 	        @Override
 	        public void run() {
 	        	Platform.runLater(new Runnable() {
@@ -73,6 +74,34 @@ public class JavaFXController {
         				if (Main.simcomm.getCurrentFlightTime() >= Main.simcomm.getFlightLength())
 	        				onClickStop();
   		      		}
+	        	});
+	        }
+	    }, 0, 100);
+	    
+	    //set joystick updater
+	    Timer joysticktimer = new Timer();
+	    joysticktimer.scheduleAtFixedRate(new TimerTask() {
+	        @Override
+	        public void run() {
+	        	Platform.runLater(new Runnable() {
+        			@Override public void run() {
+        				//get slider values and set them to joystick sliders
+        				float rudder = Main.simcomm.getFlightParameter("rudder");
+        				if (rudder > -999)
+        					((Slider)Utils.getNodeByID("rudderSlider")).setValue(rudder);
+        				float throttle = Main.simcomm.getFlightParameter("throttle");
+        				if (throttle > -999)
+        					((Slider)Utils.getNodeByID("throttleSlider")).setValue(throttle);
+        				
+        				//get joystick values and set them to the joystick circle's offset
+        				float aileron = Main.simcomm.getFlightParameter("aileron");
+        				float elevator = Main.simcomm.getFlightParameter("elevator");
+        				if (aileron > -999 && elevator > -999) {
+        					Circle joystick = (Circle)Utils.getNodeByID("joystickCircle");
+        					joystick.setTranslateX(aileron*150);
+        					joystick.setTranslateY(elevator*-150);
+        				}
+    				}
 	        	});
 	        }
 	    }, 0, 100);

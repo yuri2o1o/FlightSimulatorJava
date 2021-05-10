@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import javafx.scene.Node;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 
 public class Utils {
 	/*
@@ -38,5 +40,11 @@ public class Utils {
 		getNodeByID("currentFlightTimeLabel").setDisable(disabAll);
 		getNodeByID("currentFlightTimeSlider").setDisable(disabAll);
 		getNodeByID("totalFlightTimeLabel").setDisable(disabAll);
+		
+		//change color for joystick
+		if (disabAll)
+			((Circle)getNodeByID("joystickCircle")).setFill(Paint.valueOf("#9ea9b2"));
+		else
+			((Circle)getNodeByID("joystickCircle")).setFill(Paint.valueOf("#7ebcee"));
 	}
 }
