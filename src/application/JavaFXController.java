@@ -85,7 +85,7 @@ public class JavaFXController {
 	        public void run() {
 	        	Platform.runLater(new Runnable() {
         			@Override public void run() {
-        				//get slider values and set them to joystick sliders
+        				//get flight parameter values and set them to joystick sliders
         				float rudder = Main.simcomm.getFlightParameter("rudder");
         				if (rudder > -999)
         					((Slider)Utils.getNodeByID("rudderSlider")).setValue(rudder);
@@ -93,7 +93,7 @@ public class JavaFXController {
         				if (throttle > -999)
         					((Slider)Utils.getNodeByID("throttleSlider")).setValue(throttle);
         				
-        				//get joystick values and set them to the joystick circle's offset
+        				//get flight parameter values and set them to the joystick circle's offset
         				float aileron = Main.simcomm.getFlightParameter("aileron");
         				float elevator = Main.simcomm.getFlightParameter("elevator");
         				if (aileron > -999 && elevator > -999) {
@@ -101,6 +101,25 @@ public class JavaFXController {
         					joystick.setTranslateX(aileron*150);
         					joystick.setTranslateY(elevator*-150);
         				}
+    				}
+	        	});
+	        }
+	    }, 0, 100);
+	    
+	  //set gauges panel updater
+	    Timer gaugestimer = new Timer();
+	    gaugestimer.scheduleAtFixedRate(new TimerTask() {
+	        @Override
+	        public void run() {
+	        	Platform.runLater(new Runnable() {
+        			@Override public void run() {
+        				//get flight parameter values and set them to gauges
+        				((Label)Utils.getNodeByID("altitudeLabel")).setText(Main.simcomm.getFlightParameter("altimeter_indicated-altitude-ft")+"");
+        				((Label)Utils.getNodeByID("airspeedLabel")).setText(Main.simcomm.getFlightParameter("airspeed-indicator_indicated-speed-kt")+"");
+        				((Label)Utils.getNodeByID("headingLabel")).setText(Main.simcomm.getFlightParameter("indicated-heading-deg")+"");
+        				((Label)Utils.getNodeByID("rollLabel")).setText(Main.simcomm.getFlightParameter("attitude-indicator_indicated-roll-deg")+"");
+        				((Label)Utils.getNodeByID("pitchLabel")).setText(Main.simcomm.getFlightParameter("attitude-indicator_internal-pitch-deg")+"");
+        				((Label)Utils.getNodeByID("yawLabel")).setText(Main.simcomm.getFlightParameter("side-slip-deg")+"");
     				}
 	        	});
 	        }
