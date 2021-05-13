@@ -25,16 +25,27 @@ import org.xml.sax.SAXException;
 public class FlightGearAPI implements SimulatorAPI {
 	public static final int defcommdelay = 50; //the default delay (in ms) for communication with the simulator
 	private SocketIO simin = null;
-	
+
 	private Process simulator;
 	private Thread datainthread;
-	
+
 	private FlightSimulationDataHandler datahandler;
 	private Thread dataoutthread;
-	
+
 	//simulation data (updates in real time - readonly)
-	private List<FlightParam> flightdata = new ArrayList<>();
-	
+	private  List<FlightParam> flightdata = new ArrayList<>();
+
+	// Added for the controller to HS
+	public List<String> getList()
+	{
+		 List<String> flightdata = new ArrayList<>();
+		 for(int i=0; i<this.flightdata.size();i++)
+			 flightdata.add(this.flightdata.get(i).name);
+
+		 return flightdata;
+	}
+
+
 	/*
 	 * Reads flight parameters from socket into flightdata
 	 * out (via flightdata): float[] - the flight parameters by order (as written in playback XML)
@@ -47,8 +58,8 @@ public class FlightGearAPI implements SimulatorAPI {
 			} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) { flightdata.get(i).value = -9999; };
 		}
 	}
-	
-	
+
+
 	/*
 	 * Agent function to handle real-time updates for the flight parameters (should be run as thread)
 	 */
@@ -58,14 +69,14 @@ public class FlightGearAPI implements SimulatorAPI {
 			try { Thread.sleep(defcommdelay); } catch (InterruptedException e) { continue; }
 		}
 	}
-	
+
 	/*
 	 * Function that initiates the flightdata list (via the playback XML)
 	 */
 	private void initFlightDataFromXML() {
 		//read playback xml into Document and parse it
 		File playback = new File(Main.conf.simulator_playback);
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();  
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db;
 		Document doc;
 		try {
@@ -75,7 +86,7 @@ public class FlightGearAPI implements SimulatorAPI {
 			return;
 		}
 		doc.getDocumentElement().normalize();
-		
+
 		//go over all chunks in output
 		NodeList nodeList = ((Element)(doc.getElementsByTagName("output").item(0))).getElementsByTagName("chunk");
 		for (int i = 0; i < nodeList.getLength(); i++)
@@ -86,7 +97,7 @@ public class FlightGearAPI implements SimulatorAPI {
 			flightdata.add(new FlightParam(e.getElementsByTagName("name").item(0).getTextContent(), -9999));
 		}
 	}
-	
+
 	/*
 	 * Function that copies a playback file from the project's directory to the simulators protocol path
 	 */
@@ -98,7 +109,7 @@ public class FlightGearAPI implements SimulatorAPI {
 	        return;
 	    if (!destFile.exists())
 	        destFile.createNewFile();
-	    
+
 	    //transfer the data
 	    FileChannel source = null;
 	    FileChannel destination = null;
@@ -106,19 +117,19 @@ public class FlightGearAPI implements SimulatorAPI {
 	    destination = new FileOutputStream(destFile).getChannel();
 	    if (destination != null && source != null)
 	        destination.transferFrom(source, 0, source.size());
-	    
+
 	    //close the files
 	    if (source != null)
 	        source.close();
 	    if (destination != null)
 	        destination.close();
 	}
-	
+
 	public FlightGearAPI() throws IOException {
 		initFlightDataFromXML();
 		copyPlaybackToSimulator();
 	}
-	
+
 	/*
 	 * Init function that waits for simulator connection and starts the updateSimDataAgent
 	 */
@@ -126,14 +137,14 @@ public class FlightGearAPI implements SimulatorAPI {
 	public void start() throws UnknownHostException, IOException, InterruptedException {
 		//start the simulator
 		simulator = new FlightGearProcess(Main.conf.simulator_path, Main.conf.simulator_input_port, Main.conf.simulator_output_port);
-		
+
 		//open server socket, wait for simulator to finish starting, than start the update thread
 		simin = new SocketIO(Main.conf.simulator_input_port);
 		Thread.sleep(Main.conf.init_sleep_seconds*1000);
 		datainthread = new Thread(()->updateSimDataAgent());
 		datainthread.start();
 	}
-	
+
 	/*
 	 * Finalizes the API (releases sockets and threads)
 	 */
@@ -145,7 +156,7 @@ public class FlightGearAPI implements SimulatorAPI {
 		simin.close();
 		simulator.destroy();
 	}
-	
+
 	/*
 	 * Function to load CSV flight data to the system
 	 * in: filename - the name of the CSV file to send
@@ -154,11 +165,11 @@ public class FlightGearAPI implements SimulatorAPI {
 	public void loadFlightDataFromCSV(String filename) throws UnknownHostException, IOException {
 		//open socket to simulator out port
 		SocketIO simout = new SocketIO("localhost", Main.conf.simulator_output_port);
-		
+
 		//read all lines from the CSV and instantiate datahandler
 		datahandler = new FlightSimulationDataHandler(simout, new String (Files.readAllBytes(Paths.get(filename))).split("\n"), Main.conf.playback_sample_rate_ms, Main.conf.playback_speed_multiplayer);
 	}
-	
+
 	/*
 	 * Function to send (preloaded) flight data to the simulator
 	 */
@@ -173,7 +184,9 @@ public class FlightGearAPI implements SimulatorAPI {
 		});
 		dataoutthread.start();
 	}
-	
+
+
+
 	/*
 	 * Function to get a flight parameter by name (as written in the playback XML)
 	 * in: paramname - the name of the parameter
@@ -186,22 +199,22 @@ public class FlightGearAPI implements SimulatorAPI {
 				return param.value;
 		return 0;
 	}
-	
+
 	@Override
 	public void setSimulationSpeed(float speedmuliplayer) {
 		datahandler.setFlightSpeed(speedmuliplayer);
 	}
-	
+
 	@Override
 	public void setCurrentFlightTime(long currenttimems) {
 		datahandler.setCurrentFlightTime(currenttimems);
 	}
-	
+
 	@Override
 	public long getFlightLength() {
 		return datahandler.getFlightLength();
 	}
-	
+
 	@Override
 	public long getCurrentFlightTime() {
 		return datahandler.getCurrentFlightTime();

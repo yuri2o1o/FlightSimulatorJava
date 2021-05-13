@@ -3,26 +3,34 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public class JavaFXController {	
+public class JavaFXController {
 	public boolean isTimeSliding = false;
 	public boolean isSpeedSliding = false;
-	
+
+	@FXML private ListView listView1;
+	@FXML private ListView listView2;
+
 	public void onClickOpen()
 	{
 		//choose Flight CSV file
@@ -36,7 +44,7 @@ public class JavaFXController {
 		}
 		Main.conf.flight_data_csv = selectedFile.getAbsolutePath();
 		Main.conf.playback_speed_multiplayer = 0; //start paused
-		
+
 		//start flight emulation
 		System.out.println("Starting flight emulation...");
 		//use API to send flight data
@@ -47,17 +55,17 @@ public class JavaFXController {
 			new Alert(Alert.AlertType.ERROR, "ERROR: Could not send flight data XML to simulator").showAndWait();
 			return;
 		}
-		
+
 		//update GUI
 		Utils.setDisabALL(false); //enable all other buttons
 		Utils.getNodeByID("openButton").setDisable(true); //disable open button after first use
 		((Label)Utils.getNodeByID("totalFlightTimeLabel")).setText(Utils.msToTimeString(Main.simcomm.getFlightLength())); //update total flight time label
 		((Slider)Utils.getNodeByID("currentFlightTimeSlider")).setMax(Main.simcomm.getFlightLength()); //update flight time slider
-		
+
 		//set slider events
 		onMouseMovedTimeSlider();
 		onMouseMovedSpeedSlider();
-		
+
 		//set current time updater
 		Timer timetimer = new Timer();
 		timetimer.scheduleAtFixedRate(new TimerTask() {
@@ -77,7 +85,7 @@ public class JavaFXController {
 	        	});
 	        }
 	    }, 0, 100);
-	    
+
 	    //set joystick updater
 	    Timer joysticktimer = new Timer();
 	    joysticktimer.scheduleAtFixedRate(new TimerTask() {
@@ -92,7 +100,7 @@ public class JavaFXController {
         				float throttle = Main.simcomm.getFlightParameter("throttle");
         				if (throttle > -999)
         					((Slider)Utils.getNodeByID("throttleSlider")).setValue(throttle);
-        				
+
         				//get flight parameter values and set them to the joystick circle's offset
         				float aileron = Main.simcomm.getFlightParameter("aileron");
         				float elevator = Main.simcomm.getFlightParameter("elevator");
@@ -105,7 +113,7 @@ public class JavaFXController {
 	        	});
 	        }
 	    }, 0, 100);
-	    
+
 	  //set gauges panel updater
 	    Timer gaugestimer = new Timer();
 	    gaugestimer.scheduleAtFixedRate(new TimerTask() {
@@ -124,6 +132,17 @@ public class JavaFXController {
 	        	});
 	        }
 	    }, 0, 100);
+
+
+	    /// Test
+	    List<String> flightdata = new ArrayList<>();
+		flightdata = Main.simcomm.getList();
+		listView1.getItems().addAll(flightdata);
+		listView2.getItems().addAll(flightdata);
+
+		listView1.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		listView2.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
 	}
 
 	public void changeSpeedAndUpdateGUI(float speedmult) {
@@ -132,7 +151,7 @@ public class JavaFXController {
 		((Slider)Utils.getNodeByID("speedMultSlider")).setValue((int)(speedmult * 100)); //update speed slider
 		Main.simcomm.setSimulationSpeed(speedmult); //set simulation speed
 	}
-	
+
 	public void onClickPlay()
 	{
 		changeSpeedAndUpdateGUI(1); //play by setting speed to 1
@@ -149,7 +168,7 @@ public class JavaFXController {
 		onClickPause();
 		Main.simcomm.setCurrentFlightTime(0);
 	}
-	
+
 	public void onClickSlow()
 	{
 		changeSpeedAndUpdateGUI(0.5f); //decrease speed
@@ -169,9 +188,9 @@ public class JavaFXController {
 	{
 		changeSpeedAndUpdateGUI(4f); //dramatically increase speed
 	}
-	
-	public void onTextChangedMultField() {	
-		try { 
+
+	public void onTextChangedMultField() {
+		try {
 			//parse the text and update the simulation speed
 			float speedmult = Float.parseFloat(((TextField)Utils.getNodeByID("speedMultTextfield")).getText());
 			if (speedmult < 0 || speedmult > 5)
@@ -179,8 +198,8 @@ public class JavaFXController {
 			changeSpeedAndUpdateGUI(speedmult);
 		} catch(Exception e) { new Alert(Alert.AlertType.ERROR, "Invalid speed multiplayer value - must be a number between 0 and 5").showAndWait(); changeSpeedAndUpdateGUI(1); } //display error and change speed back to 1
 	}
-	
-	
+
+
 	//change label when sliding, but only change flight time when we drop the slider
 	public void onMousePressedTimeSlider() {
 		isTimeSliding = true;
@@ -188,20 +207,22 @@ public class JavaFXController {
 	public void onMouseMovedTimeSlider() {
 		((Slider)Utils.getNodeByID("currentFlightTimeSlider")).valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) { 
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
             	if (!isTimeSliding)
         			return;
         		((Label)Utils.getNodeByID("currentFlightTimeLabel")).setText(Utils.msToTimeString((long)((Slider)Utils.getNodeByID("currentFlightTimeSlider")).getValue())); //update label
             }
 	    });
 	}
-	
+
 	public void onMouseReleasedTimeSlider() {
 		Main.simcomm.setCurrentFlightTime((long)((Slider)Utils.getNodeByID("currentFlightTimeSlider")).getValue()); //set flight time
 		isTimeSliding = false;
 	}
-	
-	
+
+
+
+
 	//change label when sliding, but only change flight time when we drop the slider
 	public void onMousePressedSpeedSlider() {
 		isSpeedSliding = true;
@@ -209,21 +230,56 @@ public class JavaFXController {
 	public void onMouseMovedSpeedSlider() {
 		((Slider)Utils.getNodeByID("speedMultSlider")).valueProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) { 
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
             	if (!isSpeedSliding)
         			return;
         		((TextField)Utils.getNodeByID("speedMultTextfield")).setText(Float.parseFloat((new DecimalFormat("0.00")).format(((Slider)Utils.getNodeByID("speedMultSlider")).getValue()/100)) + ""); //round slider data and set it to speed field
             }
 	    });
 	}
-	
+
 	public void onMouseReleasedSpeedSlider() {
 		changeSpeedAndUpdateGUI(((float)(((Slider)Utils.getNodeByID("speedMultSlider")).getValue()))/100); //set flight speed
 		isSpeedSliding = false;
 	}
-	
+
 	@FXML
 	public void exitApplication(ActionEvent event) {
 	   Platform.exit(); //used to enable stop function in Main
 	}
+
+
+
+	public void slectedItemListView1()
+	{
+		String selected1 ="";
+
+
+		ObservableList listOfItems1= listView1.getSelectionModel().getSelectedItems();
+
+		for(Object item: listOfItems1)
+		{
+			selected1+=String.format("%s%n", (String)item);
+		}
+
+		System.out.println(selected1);
+	}
+
+
+
+	public void slectedItemListView2()
+	{
+		String selected2 ="";
+
+		ObservableList listOfItems2= listView2.getSelectionModel().getSelectedItems();
+
+		for(Object item: listOfItems2)
+		{
+			selected2+=String.format("%s%n", (String)item);
+		}
+
+		System.out.println(selected2);
+
+	}
+
 }

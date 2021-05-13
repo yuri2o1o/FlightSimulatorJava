@@ -15,11 +15,11 @@ public class Main extends Application {
 	public static Config conf;
 	public static Stage primaryStage;
 	public static Scene scene;
-	
+
 	@Override
 	public void start(Stage nprimaryStage) {
 		primaryStage = nprimaryStage;
-		
+
 		//start simulator
 		System.out.println("Connecting to flight simulator...");
 		try {
@@ -30,9 +30,9 @@ public class Main extends Application {
 			new Alert(Alert.AlertType.ERROR, "ERROR: Could not read config / playback XML").showAndWait();
 			return;
 		}
-		
+
 		System.out.println("Connected.");
-		
+
 		//start JavaFX scene
 		System.out.println("Opening scene...");
 		try {
@@ -45,7 +45,7 @@ public class Main extends Application {
 			Utils.setDisabALL(true); //disable all buttons on startup before open
 		} catch(Exception e) {}
 	}
-	
+
 	@Override
 	public void stop(){
 	    System.out.println("Stage is closing, finalizing...");
