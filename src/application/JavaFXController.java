@@ -134,7 +134,7 @@ public class JavaFXController {
 	    }, 0, 100);
 
 
-	    /// Test
+	    // sets the lists-views
 	    List<String> flightdata = new ArrayList<>();
 		flightdata = Main.simcomm.getList();
 		listView1.getItems().addAll(flightdata);
@@ -250,6 +250,7 @@ public class JavaFXController {
 
 
 
+	// Gets the parameter that the customer chose in the first list
 	public void slectedItemListView1()
 	{
 		String selected1 ="";
@@ -266,7 +267,7 @@ public class JavaFXController {
 	}
 
 
-
+	// Gets the parameter that the customer chose in the second list
 	public void slectedItemListView2()
 	{
 		String selected2 ="";
