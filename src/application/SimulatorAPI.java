@@ -2,6 +2,7 @@ package application;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 //Interface for flight simulator communication
 public interface SimulatorAPI {
@@ -14,4 +15,5 @@ public interface SimulatorAPI {
 	void setCurrentFlightTime(long currenttimems);
 	long getFlightLength();
 	long getCurrentFlightTime();
+	public List<String> getList();
 }
