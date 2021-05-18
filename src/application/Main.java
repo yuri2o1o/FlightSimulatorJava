@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
@@ -43,6 +44,10 @@ public class Main extends Application {
 			primaryStage.setResizable(false);
 			primaryStage.show();
 			Utils.setDisabALL(true); //disable all buttons on startup before open
+			
+			//so line charts don't display dots
+			((LineChart)Utils.getNodeByID("paramGraph1")).setCreateSymbols(false);
+			((LineChart)Utils.getNodeByID("paramGraph2")).setCreateSymbols(false);
 		} catch(Exception e) {}
 	}
 

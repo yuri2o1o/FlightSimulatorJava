@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.ScatterChart?>
@@ -15,9 +14,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.JavaFXController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.JavaFXController">
    <center>
       <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -134,27 +132,23 @@
                               </HBox>
                            </children>
                         </VBox>
-                        <ListView fx:id="listView2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#slectedItemListView2" prefHeight="320.0" prefWidth="100.0" />
-                        <ListView fx:id="listView1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#slectedItemListView1" prefHeight="320.0" prefWidth="100.0" />
+                        <ListView fx:id="parameterListView1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onMouseClickedParameterListView1" prefHeight="320.0" prefWidth="100.0" />
+                        <ListView fx:id="parameterListView2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onMouseClickedParameterListView2" prefHeight="320.0" prefWidth="100.0" />
                         <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="240.0">
                            <children>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <LineChart fx:id="paramGraph1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="120.0">
+                                    <LineChart fx:id="paramGraph1" animated="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="120.0">
                                       <xAxis>
-                                        <CategoryAxis fx:id="paramCategoryAxis1" endMargin="0.0" gapStartAndEnd="false" label="parameter 1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" side="BOTTOM" startMargin="0.0" tickLabelGap="0.0" tickLabelsVisible="false" tickMarkVisible="false" translateY="18.0">
-                                             <tickLabelFont>
-                                                <Font size="1.0" />
-                                             </tickLabelFont>
-                                          </CategoryAxis>
+                                        <NumberAxis fx:id="paramCategoryAxis1" animated="false" forceZeroInRange="false" label="parameter 1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" translateY="18.0" />
                                       </xAxis>
                                       <yAxis>
                                         <NumberAxis animated="false" forceZeroInRange="false" minorTickVisible="false" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" />
                                       </yAxis>
                                     </LineChart>
-                                    <LineChart fx:id="paramGraph2" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="120.0">
+                                    <LineChart fx:id="paramGraph2" animated="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="120.0">
                                       <xAxis>
-                                        <CategoryAxis fx:id="paramCategoryAxis2" gapStartAndEnd="false" label="parameter 2" prefHeight="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" translateY="18.0" />
+                                        <NumberAxis fx:id="paramCategoryAxis2" animated="false" forceZeroInRange="false" label="parameter 2" prefHeight="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" translateY="18.0" />
                                       </xAxis>
                                       <yAxis>
                                         <NumberAxis animated="false" forceZeroInRange="false" minorTickVisible="false" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" />
@@ -164,7 +158,7 @@
                               </HBox>
                               <ScatterChart fx:id="anomalyGraph" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="220.0" prefWidth="240.0">
                                 <xAxis>
-                                  <CategoryAxis gapStartAndEnd="false" label="anomaly graph" prefHeight="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" translateY="18.0" />
+                                  <NumberAxis label="anomaly graph" prefHeight="0.0" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" translateY="18.0" />
                                 </xAxis>
                                 <yAxis>
                                   <NumberAxis animated="false" forceZeroInRange="false" minorTickVisible="false" side="LEFT" tickLabelsVisible="false" tickMarkVisible="false" />

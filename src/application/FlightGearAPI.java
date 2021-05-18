@@ -36,7 +36,7 @@ public class FlightGearAPI implements SimulatorAPI {
 	private  List<FlightParam> flightdata = new ArrayList<>();
 
 	// Added for the controller to HS
-	public List<String> getList()
+	public List<String> getFlightDataList()
 	{
 		 List<String> flightdata = new ArrayList<>();
 		 for(int i=0; i<this.flightdata.size();i++)
@@ -218,5 +218,15 @@ public class FlightGearAPI implements SimulatorAPI {
 	@Override
 	public long getCurrentFlightTime() {
 		return datahandler.getCurrentFlightTime();
+	}
+
+	@Override
+	public String[] getFlightData() {
+		return datahandler.getFlightData();
+	}
+
+	@Override
+	public int getFlightDataIndexByMsTime(int mstime) {
+		return datahandler.getFlightDataIndexByMsTime(mstime);
 	}
 }

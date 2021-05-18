@@ -17,6 +17,10 @@ public class FlightSimulationDataHandler {
 		flightlenms = flightdata.length * samplerate;
 	}
 	
+	public int getFlightDataIndexByMsTime(long mstime) {
+		return (int)((mstime/FlightGearAPI.defcommdelay)*timecorrection);
+	}
+	
 	/*
 	 * Agent function used to send flightdata to the simulator (should be ran as thread)
 	 * in: filename - the name of the CSV file to send
@@ -24,7 +28,7 @@ public class FlightSimulationDataHandler {
 	 */
 	public void sendFlightDataToSimulatorAgent() throws InterruptedException {
 		for (; currenttimems < flightlenms; currenttimems += timejumpms) {
-			simout.writeln(flightdata[(int)((currenttimems/FlightGearAPI.defcommdelay)*timecorrection)]);
+			simout.writeln(flightdata[getFlightDataIndexByMsTime(currenttimems)]);
 			Thread.sleep(FlightGearAPI.defcommdelay);
 		}
 	}
@@ -43,6 +47,10 @@ public class FlightSimulationDataHandler {
 	
 	public long getCurrentFlightTime() {
 		return currenttimems;
+	}
+	
+	public String[] getFlightData() {
+		return flightdata;
 	}
 	
 	public void close() { simout.close(); }

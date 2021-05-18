@@ -15,5 +15,7 @@ public interface SimulatorAPI {
 	void setCurrentFlightTime(long currenttimems);
 	long getFlightLength();
 	long getCurrentFlightTime();
-	public List<String> getList();
+	public String[] getFlightData();
+	public List<String> getFlightDataList();
+	public int getFlightDataIndexByMsTime(int mstime);
 }

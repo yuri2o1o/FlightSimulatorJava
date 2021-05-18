@@ -14,6 +14,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -27,9 +31,9 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class JavaFXController {
 	public boolean isTimeSliding = false;
 	public boolean isSpeedSliding = false;
-
-	@FXML private ListView listView1;
-	@FXML private ListView listView2;
+	
+	private boolean param1selected = false;
+	private boolean param2selected = false;
 
 	public void onClickOpen()
 	{
@@ -132,17 +136,45 @@ public class JavaFXController {
 	        	});
 	        }
 	    }, 0, 100);
+	    
+	    //set param graphs updater
+	    Timer paramtimer = new Timer();
+	    gaugestimer.scheduleAtFixedRate(new TimerTask() {
+	        @Override
+	        public void run() {
+	        	Platform.runLater(new Runnable() {
+        			@Override public void run() {
+        				//erase graph data - so we can also support time jumps
+        				((LineChart)Utils.getNodeByID("paramGraph1")).getData().clear();
+        				((LineChart)Utils.getNodeByID("paramGraph2")).getData().clear();
+        				
+        				//create series for graph 1 (start from 00:00:05 and move one second for each graph node)
+        				if (param1selected)
+        				{
+	        				XYChart.Series series = new XYChart.Series();
+	        				for (int time = 5000; time < Main.simcomm.getCurrentFlightTime(); time += 1000)
+	        					try { series.getData().add(new XYChart.Data(time, Float.parseFloat(Main.simcomm.getFlightData()[Main.simcomm.getFlightDataIndexByMsTime(time)].split(",")[((ListView)Utils.getNodeByID("parameterListView1")).getSelectionModel().getSelectedIndex()]))); } catch (Exception e) { continue; }
+	        				((LineChart)Utils.getNodeByID("paramGraph1")).getData().add(series); //assign series
+        				}
+        				
+        				//create series for graph 2
+        				if (param2selected)
+        				{
+        					XYChart.Series series = new XYChart.Series();
+	        				for (int time = 5000; time < Main.simcomm.getCurrentFlightTime(); time += 1000)
+	        					try { series.getData().add(new XYChart.Data(time, Float.parseFloat(Main.simcomm.getFlightData()[Main.simcomm.getFlightDataIndexByMsTime(time)].split(",")[((ListView)Utils.getNodeByID("parameterListView2")).getSelectionModel().getSelectedIndex()]))); } catch (Exception e) { continue; }
+	        				((LineChart)Utils.getNodeByID("paramGraph2")).getData().add(series); //assign series
+        				}
+    				}
+	        	});
+	        }
+	    }, 0, 100);
 
-
-	    // sets the lists-views
+	    //set lists-view values
 	    List<String> flightdata = new ArrayList<>();
-		flightdata = Main.simcomm.getList();
-		listView1.getItems().addAll(flightdata);
-		listView2.getItems().addAll(flightdata);
-
-		listView1.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		listView2.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
+		flightdata = Main.simcomm.getFlightDataList();
+		((ListView)Utils.getNodeByID("parameterListView1")).getItems().addAll(flightdata);
+		((ListView)Utils.getNodeByID("parameterListView2")).getItems().addAll(flightdata);
 	}
 
 	public void changeSpeedAndUpdateGUI(float speedmult) {
@@ -151,7 +183,7 @@ public class JavaFXController {
 		((Slider)Utils.getNodeByID("speedMultSlider")).setValue((int)(speedmult * 100)); //update speed slider
 		Main.simcomm.setSimulationSpeed(speedmult); //set simulation speed
 	}
-
+	
 	public void onClickPlay()
 	{
 		changeSpeedAndUpdateGUI(1); //play by setting speed to 1
@@ -242,45 +274,22 @@ public class JavaFXController {
 		changeSpeedAndUpdateGUI(((float)(((Slider)Utils.getNodeByID("speedMultSlider")).getValue()))/100); //set flight speed
 		isSpeedSliding = false;
 	}
+	
+	public void onMouseClickedParameterListView1() {
+		//update category axis label
+		param1selected = true;
+		((NumberAxis)Utils.getNodeByID("paramCategoryAxis1")).setLabel((String)(((ListView)Utils.getNodeByID("parameterListView1")).getSelectionModel().getSelectedItems().get(0)));
+	}
+	
+	public void onMouseClickedParameterListView2() {
+		//update category axis label
+		param2selected = true;
+		((NumberAxis)Utils.getNodeByID("paramCategoryAxis2")).setLabel((String)(((ListView)Utils.getNodeByID("parameterListView2")).getSelectionModel().getSelectedItems().get(0)));
+	}
 
 	@FXML
 	public void exitApplication(ActionEvent event) {
 	   Platform.exit(); //used to enable stop function in Main
-	}
-
-
-
-	// Gets the parameter that the customer chose in the first list
-	public void slectedItemListView1()
-	{
-		String selected1 ="";
-
-
-		ObservableList listOfItems1= listView1.getSelectionModel().getSelectedItems();
-
-		for(Object item: listOfItems1)
-		{
-			selected1+=String.format("%s%n", (String)item);
-		}
-
-		System.out.println(selected1);
-	}
-
-
-	// Gets the parameter that the customer chose in the second list
-	public void slectedItemListView2()
-	{
-		String selected2 ="";
-
-		ObservableList listOfItems2= listView2.getSelectionModel().getSelectedItems();
-
-		for(Object item: listOfItems2)
-		{
-			selected2+=String.format("%s%n", (String)item);
-		}
-
-		System.out.println(selected2);
-
 	}
 
 }
