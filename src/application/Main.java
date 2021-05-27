@@ -1,9 +1,15 @@
 package application;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.Alert;
@@ -44,7 +50,7 @@ public class Main extends Application {
 			primaryStage.setResizable(false);
 			primaryStage.show();
 			Utils.setDisabALL(true); //disable all buttons on startup before open
-			
+
 			//so line charts don't display dots
 			((LineChart)Utils.getNodeByID("paramGraph1")).setCreateSymbols(false);
 			((LineChart)Utils.getNodeByID("paramGraph2")).setCreateSymbols(false);
@@ -57,7 +63,21 @@ public class Main extends Application {
 	    try { simcomm.finalize(); } catch(Exception e) {}; //finalize when we close the stage
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		launch(args); //start program as JavaFX project
+
+		// The plugin
+		String input,className;
+		System.out.println("enter a class directory");
+		BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
+		input=in.readLine(); // get user input
+		System.out.println("enter the class name");
+		className=in.readLine();
+		in.close();
+		// load class directory
+		URLClassLoader urlClassLoader = URLClassLoader.newInstance(new URL[] {
+		 new URL("file://"+input)
+		});
+		Class<?> c=urlClassLoader.loadClass(className);
 	}
 }

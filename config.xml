@@ -5,7 +5,7 @@
    <string>simulator_path</string>
    <void method="set">
     <object idref="Config0"/>
-    <string>D:\FlightGear2020.3.8</string>
+    <string>C:\Program Files\FlightGear2020.3</string>
    </void>
   </void>
   <void class="application.Config" method="getField">
