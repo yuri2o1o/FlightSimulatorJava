@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -61,45 +62,94 @@ public class Main extends Application {
 			//so line charts don't display dots
 			((LineChart)Utils.getNodeByID("paramGraph1")).setCreateSymbols(false);
 			((LineChart)Utils.getNodeByID("paramGraph2")).setCreateSymbols(false);
+
+
 		} catch(Exception e) {}
+
 	}
 
 	@Override
 	public void stop(){
-	    System.out.println("Stage is closing, finalizing...");
+		System.out.println("Stage is closing, finalizing...");
 	    try { simcomm.finalize(); } catch(Exception e) {}; //finalize when we close the stage
 	}
 
 	public static void main(String[] args) throws Exception {
 		launch(args); //start program as JavaFX project
 
-		// The plugin
-		String input,className;
-		System.out.println("enter a class directory");
+
+
+
+
+		/*
+		System.out.println("HELLo");
+		String input = null,className = null;
+		System.out.println("enter path to annomaly detection algorithms");
 		BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
-		input=in.readLine(); // get user input
-		System.out.println("enter the class name");
-		className=in.readLine();
-		in.close();
+		try {
+			input=in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // get user input
+		System.out.println("enter the algorithms name");
+		try {
+			className=in.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// load class directory
-		URLClassLoader urlClassLoader = URLClassLoader.newInstance(new URL[] {
-		 new URL("file://"+input)
-		});
+		URLClassLoader urlClassLoader = null;
+		try {
+			urlClassLoader = URLClassLoader.newInstance(new URL[] {
+			 new URL("file://"+input)
+			});
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		 Class<AnomalyDetectionAlgorithm> d=(Class<AnomalyDetectionAlgorithm>) urlClassLoader.loadClass(className);
-		 AnomalyDetectionAlgorithm a = d.newInstance();
-		 File reg = new File("C:\\Users\\User\\workspace\\FlightSimulatorJava\\reg_flight.csv");
-		 File ano = new File("C:\\Users\\User\\workspace\\FlightSimulatorJava\\anomaly_flight.csv");
+
+		Class<AnomalyDetectionAlgorithm> d = null;
+		try {
+			d = (Class<AnomalyDetectionAlgorithm>) urlClassLoader.loadClass(className);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 
-		 a.learnNormal(reg);
-		 List<AnomalyReport> list = a.detect(ano);
-		 XYChart.Series series = new XYChart.Series();
-		 for(int i=0; i<list.size();i++)
-		 {
-			 series.getData().add(new XYChart.Data(list.get(i).x, list.get(i).y));
-		 }
-		 ((LineChart)Utils.getNodeByID("anomalyGraph")).getData().add(series);
+		 try {
+			AnomalyDetectionAlgorithm a = d.newInstance();
+			File reg = new File(Main.conf.flight_data_csv);
+			File ano = new File("C:\\Users\\User\\workspace\\FlightSimulatorJava\\anomaly_flight.csv");
+			a.learnNormal(reg);
+			List<AnomalyReport> list =  a.detect(ano);
 
+			 XYChart.Series series = new XYChart.Series();
+			 for(int i=0; i<list.size();i++)
+			 {
+				 series.getData().add(new XYChart.Data(list.get(i).x, list.get(i).y));
+			 }
+
+				System.out.println("proonce");
+				((LineChart)Utils.getNodeByID("anomalyGraph")).getData().add(series);
+
+
+			// List<AnomalyReport> list =  a.detect(ano);
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 }

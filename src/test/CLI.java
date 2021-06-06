@@ -10,10 +10,10 @@ public class CLI {
 	ArrayList<Command> commands;
 	DefaultIO dio;
 	Commands c;
-
+	
 	public CLI(DefaultIO dio, int id) {
 		this.dio=dio;
-		c=new Commands(dio,id);
+		c=new Commands(dio,id); 
 		commands=new ArrayList<>();
 		commands.add(c.new UploadCSVCommand());
 		commands.add(c.new ThresholdCommand());
@@ -21,19 +21,19 @@ public class CLI {
 		commands.add(c.new PrintReportsCommand());
 		commands.add(c.new CommandFive());
 	}
-
+	
 	private void display()
 	{
 		dio.write("Welcome to the Anomaly Detection Server.\n");
 		dio.write("Please choose an option:\n");
-
+		
 		int i = 0;
 		for (i = 0; i < commands.size(); i++)
 			dio.write((i+1) + ". " + commands.get(i).description + "\n");
-
+		
 		dio.write((i+1) + ". exit\n");
 	}
-
+	
 	public void start() {
 		while (true)
 		{

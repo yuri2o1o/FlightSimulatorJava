@@ -20,31 +20,31 @@ public class Utils {
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return df.format((new Date(ms)));
 	}
-	
+
 	public static Node getNodeByID(String id) {
 		return Main.scene.lookup("#" + id);
 	}
-	
+
 	public static void setDisabALL(boolean disabAll) {
 		getNodeByID("playButton").setDisable(disabAll);
 		getNodeByID("pauseButton").setDisable(disabAll);
 		getNodeByID("stopButton").setDisable(disabAll);
-		
+
 		getNodeByID("superSlowButton").setDisable(disabAll);
 		getNodeByID("slowButton").setDisable(disabAll);
 		getNodeByID("fastButton").setDisable(disabAll);
 		getNodeByID("superFastButton").setDisable(disabAll);
-		
+
 		getNodeByID("speedMultSlider").setDisable(disabAll);
 		getNodeByID("speedMultTextfield").setDisable(disabAll);
-		
+
 		getNodeByID("currentFlightTimeLabel").setDisable(disabAll);
 		getNodeByID("currentFlightTimeSlider").setDisable(disabAll);
 		getNodeByID("totalFlightTimeLabel").setDisable(disabAll);
-		
+
 		getNodeByID("parameterListView1").setDisable(disabAll);
 		getNodeByID("parameterListView2").setDisable(disabAll);
-		
+
 		//change color for joystick
 		if (disabAll)
 			((Circle)getNodeByID("joystickCircle")).setFill(Paint.valueOf("#9ea9b2"));

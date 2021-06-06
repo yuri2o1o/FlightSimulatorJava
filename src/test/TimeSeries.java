@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TimeSeries {
-	
+
 	public ArrayList<String> valueNames;
 	public ArrayList<ArrayList<Float>> values;//time values will always be the first column
-	
-	
+
+
 	public TimeSeries()
 	{
 		valueNames = new ArrayList<String>();
@@ -22,7 +22,7 @@ public class TimeSeries {
 		valueNames = names;
 		this.values = values;
 	}
-	
+
 	public TimeSeries(String csvFileName) {
 		valueNames = new ArrayList<String>();
 		values = new ArrayList<ArrayList<Float>>();
@@ -34,14 +34,14 @@ public class TimeSeries {
             String[] vals = currLine.split(",");
             if (isNames)
             {
-                for (String value : vals) 
-                {	
+                for (String value : vals)
+                {
                     valueNames.add(value);
                     values.add(new ArrayList<Float>());
                 }
                 isNames = false;
-            } else 
-            {	
+            } else
+            {
                 for (int i = 0; i < vals.length; i++)
                     values.get(i).add(Float.parseFloat(vals[i]));
             }
@@ -78,7 +78,7 @@ public class TimeSeries {
 	public void setValues(ArrayList<ArrayList<Float>> values) {
 		this.values = values;
 	}
-	
+
 	public void addValue(String name, Float val)
 	{
 			if(valueNames.indexOf(name) != -1)
@@ -89,7 +89,7 @@ public class TimeSeries {
 				values.get(values.size()-1).add(val);
 				 }
 	}
-	
+
 	public Float valueInSpecificTime(Float time, String name)
 	{
 		int neededIndex = -1;
@@ -100,8 +100,8 @@ public class TimeSeries {
 			return values.get(valueNames.indexOf(name)).get(neededIndex);
 		return null;
 	}
-	
-	
-	
+
+
+
 }
 

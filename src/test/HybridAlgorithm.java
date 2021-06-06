@@ -9,7 +9,7 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 	private ZScoreAlgo zsa;//for alg 1
 	private List<AnomalyReport> res;//final result
 	private TimeSeries tsAlg1, tsAlg2, mainTs;//for each algorithm
-	
+
 	//ArrayLists below are to create a seperate TimeSeries object for each algorithm, from the original TimeSeries object created
 	//from the file
 	public ArrayList<CircleColumnPairing> arr = new ArrayList<CircleColumnPairing>();
@@ -29,7 +29,7 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 		highCorr = (float) 0.95;
 		lowCorr = (float) 0.5;
 	}
-	
+
 	public HybridAlgorithm(float highCorr,float lowCorr)
 	{
 		sad = new SimpleAnomalyDetector();
@@ -37,13 +37,13 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 		this.highCorr = highCorr;
 		this.lowCorr = lowCorr;
 	}
-	
+
 	public int findTheAlgo (String name)//determines which algorithm should be used on the feature "name"
 	{
 		float maxCorr = 0;
 		for(int i = 0; i < sad.getCorrelated().size(); i++)
 		{
-			if((sad.getCorrelated().get(i).feature1.compareTo(name) == 0 || sad.getCorrelated().get(i).feature2.compareTo(name) == 0) 
+			if((sad.getCorrelated().get(i).feature1.compareTo(name) == 0 || sad.getCorrelated().get(i).feature2.compareTo(name) == 0)
 					&& Math.abs(sad.getCorrelated().get(i).corrlation) > maxCorr)
 				maxCorr = Math.abs(sad.getCorrelated().get(i).corrlation);
 		}
@@ -53,7 +53,7 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 			return -1;
 		return 0;
 	}
-	
+
 	public void learnNormal (File trainFile)//sends each TimeSeries file to learnNormal in it's specific algorithm
 	{
 		mainTs = new TimeSeries(trainFile.toString());
@@ -86,7 +86,7 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 			if(namesBetween.contains(corr.feature1) && namesBetween.contains(corr.feature2))
 				arr.add(new CircleColumnPairing(corr.c,corr.feature1,corr.feature2));
 	}
-	
+
 	public List<AnomalyReport> detect (File testFile)//sending each TimeSeries created to its specific "Detect" function, on alg1 and 2
 	{
 		mainTs = new TimeSeries(testFile.toString());
@@ -115,7 +115,8 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 			for(int j = 0; j < allFeatureOnes.get(i).size(); j++)
 			{
 				if(!arr.get(i).c.contains(new Point(allFeatureOnes.get(i).get(j),allFeatureTwos.get(i).get(j))))
-						res.add(new AnomalyReport(arr.get(i).ft1 + "-" + arr.get(i).ft2, j+1, 0,0));
+					res.add(new AnomalyReport(arr.get(i).ft1 + "-" + arr.get(i).ft2, i+1, allFeatureOnes.get(i).get(j),allFeatureTwos.get(i).get(j)));
+
 			}
 		}
 		return res;

@@ -1,9 +1,15 @@
 package application;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,11 +33,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import test.AnomalyDetectionAlgorithm;
+import test.AnomalyReport;
+import test.ZScoreAlgo;
 
 public class JavaFXController {
 	public boolean isTimeSliding = false;
 	public boolean isSpeedSliding = false;
-	
+
 	private boolean param1selected = false;
 	private boolean param2selected = false;
 
@@ -136,7 +145,7 @@ public class JavaFXController {
 	        	});
 	        }
 	    }, 0, 100);
-	    
+
 	    //set param graphs updater
 	    Timer paramtimer = new Timer();
 	    gaugestimer.scheduleAtFixedRate(new TimerTask() {
@@ -147,7 +156,7 @@ public class JavaFXController {
         				//erase graph data - so we can also support time jumps
         				((LineChart)Utils.getNodeByID("paramGraph1")).getData().clear();
         				((LineChart)Utils.getNodeByID("paramGraph2")).getData().clear();
-        				
+
         				//create series for graph 1 (start from 00:00:05 and move one second for each graph node)
         				if (param1selected)
         				{
@@ -156,15 +165,193 @@ public class JavaFXController {
 	        					try { series.getData().add(new XYChart.Data(time, Float.parseFloat(Main.simcomm.getFlightData()[Main.simcomm.getFlightDataIndexByMsTime(time)].split(",")[((ListView)Utils.getNodeByID("parameterListView1")).getSelectionModel().getSelectedIndex()]))); } catch (Exception e) { continue; }
 	        				((LineChart)Utils.getNodeByID("paramGraph1")).getData().add(series); //assign series
         				}
-        				
+
         				//create series for graph 2
         				if (param2selected)
         				{
-        					XYChart.Series series = new XYChart.Series();
+        					 /*
+        					 XYChart.Series series = new XYChart.Series();
 	        				for (int time = 5000; time < Main.simcomm.getCurrentFlightTime(); time += 1000)
 	        					try { series.getData().add(new XYChart.Data(time, Float.parseFloat(Main.simcomm.getFlightData()[Main.simcomm.getFlightDataIndexByMsTime(time)].split(",")[((ListView)Utils.getNodeByID("parameterListView2")).getSelectionModel().getSelectedIndex()]))); } catch (Exception e) { continue; }
 	        				((LineChart)Utils.getNodeByID("paramGraph2")).getData().add(series); //assign series
+
+	        				*/
+        					System.out.println("breakMe");
+        					String paramter = ((ListView)Utils.getNodeByID("parameterListView2")).getSelectionModel().getSelectedItem().toString();
+        					String input = null,className = null;
+        					System.out.println("enter path to annomaly detection algorithms");
+        					input = "C:\\Users\\User\\workspace\\FlightSimulatorJava\\bin";
+        					//className="test.SimpleAnomalyDetector";
+        					className="test.SimpleAnomalyDetector";
+
+        					// load class directory
+        					URLClassLoader urlClassLoader = null;
+        					try {
+        						urlClassLoader = URLClassLoader.newInstance(new URL[] {
+        						 new URL("file://"+input)
+        						});
+        					} catch (MalformedURLException e) {
+        						// TODO Auto-generated catch block
+        						e.printStackTrace();
+        					}
+
+
+        					Class<AnomalyDetectionAlgorithm> d = null;
+        					try {
+        						d = (Class<AnomalyDetectionAlgorithm>) urlClassLoader.loadClass(className);
+        					} catch (ClassNotFoundException e) {
+        						// TODO Auto-generated catch block
+        						e.printStackTrace();
+        					}
+
+
+        					 try {
+        						AnomalyDetectionAlgorithm a = d.newInstance();
+        						File reg = new File(Main.conf.flight_data_csv);
+        						File ano = new File("C:\\Users\\User\\workspace\\FlightSimulatorJava\\anomaly_flight.csv");
+        						a.learnNormal(reg);
+        						List<AnomalyReport> list =  a.detect(ano);
+        						List<AnomalyReport> reallist = new LinkedList();
+
+        						ZScoreAlgo h = new ZScoreAlgo();
+        						if(a.getClass()!= h.getClass())
+        						{
+        							for(int i=0; i<list.size();i++)
+        							{
+        								if(list.get(i).description.contains(paramter))
+        									reallist.add(list.get(i));
+        							}
+        						}
+
+
+        						 XYChart.Series series = new XYChart.Series();
+        						 for(int i=0; i<reallist.size();i++)
+        						 {
+        							 series.getData().add(new XYChart.Data(reallist.get(i).x, reallist.get(i).y));
+        						 }
+        						 ((LineChart)Utils.getNodeByID("paramGraph2")).getData().add(series);
+
+
+        						// List<AnomalyReport> list =  a.detect(ano);
+        					} catch (InstantiationException e) {
+        						// TODO Auto-generated catch block
+        						e.printStackTrace();
+        					} catch (IllegalAccessException e) {
+        						// TODO Auto-generated catch block
+        						e.printStackTrace();
+        					}
+
+
+
+
         				}
+
+
+        				///////////////////////////////////////////////////////////////
+
+        				// check the big GRAPH
+
+        				//anomalyGraph
+        				//Utils.getNodeByID("anomalyGraph");
+        				/* HAGIS
+        				String input = null,className = null;
+        				System.out.println("enter path to annomaly detection algorithms");
+        				BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
+        				try {
+							input=in.readLine();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} // get user input
+        				System.out.println("enter the algorithms name");
+        				try {
+							className=in.readLine();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+        				try {
+							in.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+        				// load class directory
+        				URLClassLoader urlClassLoader = null;
+						try {
+							urlClassLoader = URLClassLoader.newInstance(new URL[] {
+							 new URL("file://"+input)
+							});
+						} catch (MalformedURLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+
+						Class<AnomalyDetectionAlgorithm> d = null;
+						try {
+							d = (Class<AnomalyDetectionAlgorithm>) urlClassLoader.loadClass(className);
+						} catch (ClassNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+
+        				 try {
+							AnomalyDetectionAlgorithm a = d.newInstance();
+							File reg = new File(Main.conf.flight_data_csv);
+							File ano = new File("C:\\Users\\User\\workspace\\FlightSimulatorJava\\anomaly_flight.csv");
+							a.learnNormal(reg);
+							List<AnomalyReport> list =  a.detect(ano);
+
+							 XYChart.Series series = new XYChart.Series();
+	        				 for(int i=0; i<list.size();i++)
+	        				 {
+	        					 series.getData().add(new XYChart.Data(list.get(i).x, list.get(i).y));
+	        				 }
+
+	         				System.out.println("proonce");
+	         				((LineChart)Utils.getNodeByID("anomalyGraph")).getData().add(series);
+
+
+							// List<AnomalyReport> list =  a.detect(ano);
+						} catch (InstantiationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+        				HAGIS */
+
+
+
+
+
+
+
+
+        			/*	AnomalyDetectionAlgorithm a = new ZScoreAlgo();
+        				// File reg = new File("C:\\Users\\User\\workspace\\FlightSimulatorJava\\reg_flight.csv");
+        				// File ano = new File("C:\\Users\\User\\workspace\\FlightSimulatorJava\\anomaly_flight.csv");
+
+        				File reg = new File(Main.conf.flight_data_csv);
+        				File ano = new File(Main.conf.flight_data_csv);
+
+
+        				 a.learnNormal(reg);
+        				 List<AnomalyReport> list = a.detect(ano);
+        				 XYChart.Series series = new XYChart.Series();
+        				 for(int i=0; i<list.size();i++)
+        				 {
+        					 series.getData().add(new XYChart.Data(list.get(i).x, list.get(i).y));
+        				 }
+        				 ((LineChart)Utils.getNodeByID("anomalyGraph")).getData().add(series); */
+
+
+
+        				///////////////////////////////////////////////////////////////
+
     				}
 	        	});
 	        }
@@ -183,7 +370,7 @@ public class JavaFXController {
 		((Slider)Utils.getNodeByID("speedMultSlider")).setValue((int)(speedmult * 100)); //update speed slider
 		Main.simcomm.setSimulationSpeed(speedmult); //set simulation speed
 	}
-	
+
 	public void onClickPlay()
 	{
 		changeSpeedAndUpdateGUI(1); //play by setting speed to 1
@@ -274,13 +461,13 @@ public class JavaFXController {
 		changeSpeedAndUpdateGUI(((float)(((Slider)Utils.getNodeByID("speedMultSlider")).getValue()))/100); //set flight speed
 		isSpeedSliding = false;
 	}
-	
+
 	public void onMouseClickedParameterListView1() {
 		//update category axis label
 		param1selected = true;
 		((NumberAxis)Utils.getNodeByID("paramCategoryAxis1")).setLabel((String)(((ListView)Utils.getNodeByID("parameterListView1")).getSelectionModel().getSelectedItems().get(0)));
 	}
-	
+
 	public void onMouseClickedParameterListView2() {
 		//update category axis label
 		param2selected = true;
