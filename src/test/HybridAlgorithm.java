@@ -10,8 +10,9 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 	private List<AnomalyReport> res;//final result
 	private TimeSeries tsAlg1, tsAlg2, mainTs;//for each algorithm
 
-	//ArrayLists below are to create a seperate TimeSeries object for each algorithm, from the original TimeSeries object created
+	//ArrayLists below are to create a separate TimeSeries object for each algorithm, from the original TimeSeries object created
 	//from the file
+	public ArrayList<Point> circlePoints = new ArrayList<>();
 	public ArrayList<CircleColumnPairing> arr = new ArrayList<CircleColumnPairing>();
 	public ArrayList<String> namesForAlg2 = new ArrayList<String>();
 	public ArrayList<String> namesForAlg1 = new ArrayList<String>();
@@ -114,11 +115,39 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 		{
 			for(int j = 0; j < allFeatureOnes.get(i).size(); j++)
 			{
-				if(!arr.get(i).c.contains(new Point(allFeatureOnes.get(i).get(j),allFeatureTwos.get(i).get(j))))
-					res.add(new AnomalyReport(arr.get(i).ft1 + "-" + arr.get(i).ft2, i+1, allFeatureOnes.get(i).get(j),allFeatureTwos.get(i).get(j)));
-
+				Point p = new Point(allFeatureOnes.get(i).get(j),allFeatureTwos.get(i).get(j));
+				circlePoints.add(p);
+				if(!arr.get(i).c.contains(p))
+						res.add(new AnomalyReport(arr.get(i).ft1 + "-" + arr.get(i).ft2, i+1, allFeatureOnes.get(i).get(j),allFeatureTwos.get(i).get(j)));
 			}
 		}
 		return res;
+	}
+
+	@Override
+	public void drawOnGraph(String graphNodeName, String featureName, int timeStamp) {
+		// TODO Auto-generated method stub
+		if(findTheAlgo(featureName) == 1)
+			sad.drawOnGraph(graphNodeName, featureName, timeStamp);
+		else if(findTheAlgo(featureName) == -1)
+			zsa.drawOnGraph(graphNodeName, featureName, timeStamp);
+		else
+		{
+			//draw all points in circlePoints until index timeStamp, xValue is p.x and yValue is p.y
+			Circle circle;
+			for(CircleColumnPairing cop : arr)
+				if(cop.ft1.compareTo(featureName) == 0 || cop.ft2.compareTo(featureName) == 0)
+					circle = cop.c;
+			//get a Circle shape on a canvas that fits the sizes in circle - circle.c as center and circle.r as radius
+
+			ArrayList<AnomalyReport> list = new ArrayList<>();
+			list.addAll(res);
+			for(AnomalyReport ar : list)
+				if(!ar.description.contains(featureName) || ar.timeStamp > timeStamp)
+					list.remove(ar);
+
+			//draw circle and add points from circlePoints and from list to the canvas
+
+		}
 	}
 }

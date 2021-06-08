@@ -229,7 +229,10 @@ public class JavaFXController {
         						 {
         							 series.getData().add(new XYChart.Data(reallist.get(i).x, reallist.get(i).y));
         						 }
-        						 ((LineChart)Utils.getNodeByID("paramGraph2")).getData().add(series);
+        						 //((LineChart)Utils.getNodeByID("paramGraph2")).getData().add(series);
+        						System.out.println("check");
+        						 final LineChart<Number,Number> sc = (LineChart<Number,Number>)Utils.getNodeByID("paramGraph2");
+        						 sc.getData().add(series);
 
 
         						// List<AnomalyReport> list =  a.detect(ano);

@@ -2,14 +2,22 @@ package test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+
+import application.Utils;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, AnomalyDetectionAlgorithm{
 	private ArrayList<CorrelatedFeatures> correlated;
 	public int steps = 0;
 	public List<AnomalyReport> reported;
 	public float maxThreshold = 0.9f;
+	public HashMap<CorrelatedFeatures,Line> map = new HashMap<>();
+	private TimeSeries timeS;
 	public SimpleAnomalyDetector()
 	{
 		correlated = new ArrayList<CorrelatedFeatures>();
@@ -56,7 +64,9 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 				for(int m = 0; m < points.length; m++)
 					points[m] = new Point(firstVal[m],ts.values.get(maxPearsonIndex).get(m).floatValue());
 				Line le = test.StatLib.linear_reg(points);
-				correlated.add(new CorrelatedFeatures(ts.getValueNames().get(i), ts.getValueNames().get(maxPearsonIndex),maxPearson ,le, maxDevFromLine(points, le),MinimalCircle.makeCircle(Arrays.asList(points))));
+				CorrelatedFeatures cf = new CorrelatedFeatures(ts.getValueNames().get(i), ts.getValueNames().get(maxPearsonIndex),maxPearson ,le, maxDevFromLine(points, le),MinimalCircle.makeCircle(Arrays.asList(points)));
+				correlated.add(cf);
+				map.put(cf, le);
 			}
 		}
 
@@ -75,19 +85,11 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 	}
 
 
-	public float[] covertlinkedlistFloattoarrfloat(ArrayList<Float> arrayList)
-	{
-		float [] realarray = new float[arrayList.size()];
-		for(int i=0; i<arrayList.size();i++)
-			realarray[i] = arrayList.get(i).floatValue();
-
-		return realarray;
-	}
-
 	@Override
 	public List<AnomalyReport> detect(TimeSeries ts) {
+		timeS = ts;
 
-		 int index1 = -1, index2 = -1;
+		int index1 = -1, index2 = -1;
 		List<AnomalyReport> lst = new LinkedList<AnomalyReport>();
 		for(int i = 0; i < ts.values.get(0).size(); i++)
 		{
@@ -101,8 +103,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 					if(test.StatLib.dev(p, correlated.get(j).lin_reg) > (correlated.get(j).threshold + 0.35))
 					{
 						String s = String.join("-", correlated.get(j).feature1,correlated.get(j).feature2);
-						lst.add(new AnomalyReport(s,i+1,ts.values.get(ts.valueNames.indexOf(correlated.get(j).feature1)).get(i+1),ts.values.get(ts.valueNames.indexOf(correlated.get(j).feature2)).get(i+1)));
-						//remember to fill x,y when you know how to
+						lst.add(new AnomalyReport(s,i+1,ts.values.get(ts.valueNames.indexOf(correlated.get(j).feature1)).get(i+1),ts.values.get(ts.valueNames.indexOf(correlated.get(j).feature2)).get(i+1)));//remember to fill x,y when you know how to
 					}
 				}
 			}
@@ -110,57 +111,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 		steps = ts.values.get(0).size();
 		reported = lst;
 		return lst;
-
-
-
-
-		/*
-
-		List<AnomalyReport> errors = new LinkedList<AnomalyReport>();
-
-		for(int i =0; i<correlated.size();i++)
-		{
-			int indexa = ts.valueNames.indexOf(correlated.get(i).feature1);
-			int indexb = ts.valueNames.indexOf(correlated.get(i).feature2);
-			if(indexa!=-1 && indexb!=-1)
-			{
-				Point[] points =  new Point[ts.values.get(i).size()];
-				float[] a = covertlinkedlistFloattoarrfloat(ts.values.get(indexa));
-				float[] b = covertlinkedlistFloattoarrfloat(ts.values.get(indexb));
-				for(int j=0; j<ts.values.get(i).size();j++)
-					points[j] = new Point(a[j],b[j]);
-
-
-				float maxhist = correlated.get(i).threshold;
-				for(int j=0; j<points.length;j++)
-				{
-					String d;
-					if(i==1 && j==17)
-						d = "d";
-
-					float intersting = StatLib.dev(points[j], correlated.get(i).lin_reg);
-					if(maxhist< intersting)
-					{
-						System.out.println(j + "," + i + ":" + intersting + ">" + maxhist);
-						//long hefresh = (long) (StatLib.dev(points[j], cfs.get(i).lin_reg)-maxhist);
-						//long timestep = ts.list.get(i).get(j).longValue();
-						long timestep = j+1;
-						errors.add(new AnomalyReport(correlated.get(i).feature1 +"-"+correlated.get(i).feature2,timestep,0,0)); //remember to fill x,y when you know how to
-					}
-				}
-			}
-
-		}
-
-		System.out.println("ssadasas");
-
-		return errors;   */
-
-
-
 	}
-
-
 
 	public boolean detectOne(Point p)
 	{
@@ -246,6 +197,62 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 		// TODO Auto-generated method stub
 		TimeSeries ts = new TimeSeries(testFile.toString());
 		return detect(ts);
+	}
+
+	@Override
+	public void drawOnGraph(String graphNodeName, String featureName, int timeStamp) {
+		// TODO Auto-generated method stub
+		Line l;
+		//draw the points
+		ArrayList<Point> points = new ArrayList<Point>();
+		int index = -1;
+		for(int i = 0; i < correlated.size(); i++)
+			if(correlated.get(i).feature1.compareTo(featureName) == 0 || correlated.get(i).feature2.compareTo(featureName) == 0)
+				index = i;
+
+		for(int i = 0; i < timeStamp; i++)
+				points.add(new Point(timeS.values.get(timeS.valueNames.indexOf(correlated.get(index).feature1)).get(i),timeS.values.get(timeS.valueNames.indexOf(correlated.get(index).feature1)).get(i)));
+
+
+
+		for(Entry<CorrelatedFeatures, Line> e : map.entrySet())
+		{
+			if(e.getKey().feature1.compareTo(featureName) == 0 || e.getKey().feature2.compareTo(featureName) == 0)
+				l = e.getValue();
+		}
+
+		//now draw line l
+
+		ArrayList<AnomalyReport> list = new ArrayList<>();
+		list.addAll(reported);
+		for(AnomalyReport ar : list)
+			if(!ar.description.contains(featureName) || ar.timeStamp > timeStamp)
+				list.remove(ar);
+		//draw anomalies on graph with xVal being reported.x and yVal being reported.y
+		final LineChart<Number,Number> sc = (LineChart<Number,Number>)Utils.getNodeByID(graphNodeName);
+
+	    XYChart.Series series1 = new XYChart.Series();
+	    series1.setName("Regular Points");
+	    for(Point p: points)
+	    	series1.getData().add(new XYChart.Data(p.x,p.y));
+
+	    XYChart.Series series2 = new XYChart.Series();
+	    series2.setName("Line");
+	    series2.getData().add(new XYChart.Data(1,l.f(1)));
+	    series2.getData().add(new XYChart.Data(timeStamp,l.f(timeStamp)));
+
+	    XYChart.Series series3 = new XYChart.Series();
+	    series3.setName("Anomalies");
+	    for(AnomalyReport ar : list)
+	    	series3.getData().add(new XYChart.Data(ar.x,ar.y));
+
+	    sc.lookup(".default-color1.chart-series-line").setStyle("-fxstroke: transparent");
+	    sc.lookup(".default-color3.chart-series-line").setStyle("-fxstroke: transparent");
+
+	    sc.setAnimated(false);
+	    sc.setCreateSymbols(true);
+
+	    sc.getData().addAll(series1, series2, series3);
 	}
 
 
