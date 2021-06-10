@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import application.Utils;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, AnomalyDetectionAlgorithm{
@@ -200,9 +201,9 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 	}
 
 	@Override
-	public void drawOnGraph(String graphNodeName, String featureName, int timeStamp) {
+	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
 		// TODO Auto-generated method stub
-		Line l;
+		Line l = new Line(0,0);
 		//draw the points
 		ArrayList<Point> points = new ArrayList<Point>();
 		int index = -1;
@@ -229,8 +230,9 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 			if(!ar.description.contains(featureName) || ar.timeStamp > timeStamp)
 				list.remove(ar);
 		//draw anomalies on graph with xVal being reported.x and yVal being reported.y
-		final LineChart<Number,Number> sc = (LineChart<Number,Number>)Utils.getNodeByID(graphNodeName);
 
+		// final LineChart<Number,Number> sc = (LineChart<Number,Number>)Utils.getNodeByID(graphNodeName);
+		/*
 	    XYChart.Series series1 = new XYChart.Series();
 	    series1.setName("Regular Points");
 	    for(Point p: points)
@@ -252,7 +254,17 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 	    sc.setAnimated(false);
 	    sc.setCreateSymbols(true);
 
-	    sc.getData().addAll(series1, series2, series3);
+	    sc.getData().addAll(series1, series2, series3); */
+
+		canvas.getGraphicsContext2D().strokeLine(1, l.f(1), timeStamp, l.f(timeStamp));
+	    for(Point p: points)
+			canvas.getGraphicsContext2D().strokeLine(p.x, p.y, p.x, p.y);
+
+	    for(AnomalyReport ar: list)
+			canvas.getGraphicsContext2D().strokeLine(ar.x, ar.y, ar.x, ar.y);
+
+
+
 	}
 
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application.Utils;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 
@@ -98,17 +99,23 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 		return anomalies;
 	}
 	@Override
-	public void drawOnGraph(String graphNodeName, String featureName, int timeStamp) {
+	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
 		// TODO Auto-generated method stub
 		ArrayList<Point> points = new ArrayList<Point>();
 		for(int i = 0; i < timeStamp; i++)
 			points.add(new Point(allZscoreVals.get(timeS.getValueNames().indexOf(featureName)).get(i), i+1));
 		//now draw points in array "points"
-		final LineChart<Number,Number> sc = (LineChart<Number,Number>)Utils.getNodeByID(graphNodeName);
+		/*final LineChart<Number,Number> sc = (LineChart<Number,Number>)Utils.getNodeByID(graphNodeName);
 		XYChart.Series series = new XYChart.Series();
 		for(Point p : points)
 			series.getData().add(new XYChart.Data(p.x,p.y));
-		sc.getData().add(series);
+		sc.getData().add(series);*/
+
+		for(int i = 0; i < timeStamp-1; i++)
+		{
+			canvas.getGraphicsContext2D().strokeLine(points.get(i).x, points.get(i).y, points.get(i+1).x, points.get(i+1).y);
+		}
+
 
 	}
 

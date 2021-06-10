@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.scene.canvas.Canvas;
+
 public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 	private SimpleAnomalyDetector sad;//for alg 2
 	private ZScoreAlgo zsa;//for alg 1
@@ -125,21 +127,23 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 	}
 
 	@Override
-	public void drawOnGraph(String graphNodeName, String featureName, int timeStamp) {
+	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
 		// TODO Auto-generated method stub
 		if(findTheAlgo(featureName) == 1)
-			sad.drawOnGraph(graphNodeName, featureName, timeStamp);
+			sad.drawOnGraph(canvas, featureName, timeStamp);
 		else if(findTheAlgo(featureName) == -1)
-			zsa.drawOnGraph(graphNodeName, featureName, timeStamp);
+			zsa.drawOnGraph(canvas, featureName, timeStamp);
 		else
 		{
 			//draw all points in circlePoints until index timeStamp, xValue is p.x and yValue is p.y
-			Circle circle;
+			Circle circle = null;
 			for(CircleColumnPairing cop : arr)
 				if(cop.ft1.compareTo(featureName) == 0 || cop.ft2.compareTo(featureName) == 0)
 					circle = cop.c;
 			//get a Circle shape on a canvas that fits the sizes in circle - circle.c as center and circle.r as radius
-
+			canvas.getGraphicsContext2D().strokeOval(circle.c.x-circle.r, circle.c.y-circle.r, circle.r*2, circle.r*2);
+			for(Point  p : circlePoints)
+				canvas.getGraphicsContext2D().strokeLine(p.x, p.y, p.x, p.y);
 			ArrayList<AnomalyReport> list = new ArrayList<>();
 			list.addAll(res);
 			for(AnomalyReport ar : list)
@@ -148,6 +152,8 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 
 			//draw circle and add points from circlePoints and from list to the canvas
 
+			for(AnomalyReport ar : list)
+				canvas.getGraphicsContext2D().strokeLine(ar.x, ar.y, ar.x, ar.y);
 		}
 	}
 }
