@@ -4,6 +4,6 @@ package application;
 public class FlightParam {
 	public String name;
 	public float value;
-	
+
 	public FlightParam(String nname, float nvalue) { name = nname; value = nvalue; }
 }

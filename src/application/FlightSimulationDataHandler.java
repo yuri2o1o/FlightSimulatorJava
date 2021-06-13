@@ -4,8 +4,8 @@ public class FlightSimulationDataHandler {
 	private SocketIO simout;
 	private String[] flightdata;
 	
-	private long flightlenms = 0; //the length of the flight in ms
-	private long currenttimems = 0; //the current flight time in ms
+	private int flightlenms = 0; //the length of the flight in ms
+	private int currenttimems = 0; //the current flight time in ms
 	private float timecorrection = 0; //inner value used to convert times to match the sample rate
 	private int timejumpms = FlightGearAPI.defcommdelay; //the amount of ms to skip each iteration (used for flight speed change)
 	
@@ -37,15 +37,15 @@ public class FlightSimulationDataHandler {
 		timejumpms = (int)(FlightGearAPI.defcommdelay * (speedmultiplayer*timecorrection));
 	}
 	
-	public long getFlightLength() {
+	public int getFlightLength() {
 		return flightlenms;
 	}
 	
-	public void setCurrentFlightTime(long ncurrenttimems) {
+	public void setCurrentFlightTime(int ncurrenttimems) {
 		currenttimems = ncurrenttimems;
 	}
 	
-	public long getCurrentFlightTime() {
+	public int getCurrentFlightTime() {
 		return currenttimems;
 	}
 	

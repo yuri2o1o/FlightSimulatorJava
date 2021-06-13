@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import application.FlightControls?>
+
+<fx:root type="javafx.scene.layout.VBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="application.JavaFXController">
+   <children>
+      <HBox prefHeight="40.0" prefWidth="200.0">
+         <children>
+            <Button fx:id="openButton" mnemonicParsing="false" onAction="#onClickOpen" prefHeight="25.0" prefWidth="447.0" text="Open">
+               <HBox.margin>
+                  <Insets left="7.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <TextField fx:id="speedMultTextfield" onAction="#onTextChangedMultField" prefHeight="25.0" prefWidth="434.0" promptText="1.0" text="1.0" translateX="485.0">
+               <HBox.margin>
+                  <Insets left="5.0" right="20.0" top="7.0" />
+               </HBox.margin>
+            </TextField>
+            <Button fx:id="playButton" mnemonicParsing="false" onAction="#onClickPlay" prefHeight="25.0" prefWidth="436.0" text="▶" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="7.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#onClickPause" prefHeight="25.0" prefWidth="432.0" text="⏸" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="7.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="stopButton" mnemonicParsing="false" onAction="#onClickStop" prefHeight="25.0" prefWidth="430.0" text="⏹" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="7.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="superSlowButton" mnemonicParsing="false" onAction="#onClickSuperSlow" prefHeight="25.0" prefWidth="435.0" text="◀◀◀" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="7.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="slowButton" mnemonicParsing="false" onAction="#onClickSlow" prefHeight="25.0" prefWidth="428.0" text="◀◀" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="7.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="fastButton" mnemonicParsing="false" onAction="#onClickFast" prefHeight="25.0" prefWidth="431.0" text="▶▶" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="7.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="superFastButton" mnemonicParsing="false" onAction="#onClickSuperFast" prefHeight="25.0" prefWidth="436.0" text="▶▶▶" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="5.0" top="7.0" />
+               </HBox.margin>
+            </Button>
+            <Slider fx:id="speedMultSlider" blockIncrement="1.0" max="500.0" onMousePressed="#onMousePressedSpeedSlider" onMouseReleased="#onMouseReleasedSpeedSlider" prefHeight="24.0" prefWidth="520.0" translateX="-50.0">
+               <HBox.margin>
+                  <Insets left="5.0" top="7.0" />
+               </HBox.margin>
+            </Slider>
+         </children>
+      </HBox>
+      <HBox prefHeight="35.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="currentFlightTimeLabel" prefWidth="45.0" text="00:00:00">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Label>
+            <Slider fx:id="currentFlightTimeSlider" blockIncrement="1000.0" max="0.0" onMousePressed="#onMousePressedTimeSlider" onMouseReleased="#onMouseReleasedTimeSlider" prefHeight="24.0" prefWidth="465.0">
+               <HBox.margin>
+                  <Insets left="5.0" top="7.0" />
+               </HBox.margin>
+            </Slider>
+            <Label fx:id="totalFlightTimeLabel" prefWidth="45.0" text="00:00:00">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </children>
+</fx:root>

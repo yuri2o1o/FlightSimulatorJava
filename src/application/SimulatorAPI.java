@@ -12,10 +12,11 @@ public interface SimulatorAPI {
 	public float getFlightParameter(String paramname);
 	public void setSimulationSpeed(float speedmuliplayer);
 	void sendFlightDataToSimulator();
-	void setCurrentFlightTime(long currenttimems);
-	long getFlightLength();
-	long getCurrentFlightTime();
+	void setCurrentFlightTime(int currenttimems);
+	int getFlightLength();
+	int getCurrentFlightTime();
 	public String[] getFlightData();
 	public List<String> getFlightDataList();
 	public int getFlightDataIndexByMsTime(int mstime);
+	int getFlightParameterIndex(String paramname);
 }
