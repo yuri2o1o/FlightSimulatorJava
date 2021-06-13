@@ -199,6 +199,14 @@ public class FlightGearAPI implements SimulatorAPI {
 				return param.value;
 		return 0;
 	}
+	
+	@Override
+	public int getFlightParameterIndex(String paramname) {
+		for (int i = 0; i < flightdata.size(); i++)
+			if (flightdata.get(i).name.equals(paramname))
+				return i;
+		return -1;
+	}
 
 	@Override
 	public void setSimulationSpeed(float speedmuliplayer) {
@@ -206,17 +214,17 @@ public class FlightGearAPI implements SimulatorAPI {
 	}
 
 	@Override
-	public void setCurrentFlightTime(long currenttimems) {
+	public void setCurrentFlightTime(int currenttimems) {
 		datahandler.setCurrentFlightTime(currenttimems);
 	}
 
 	@Override
-	public long getFlightLength() {
+	public int getFlightLength() {
 		return datahandler.getFlightLength();
 	}
 
 	@Override
-	public long getCurrentFlightTime() {
+	public int getCurrentFlightTime() {
 		return datahandler.getCurrentFlightTime();
 	}
 

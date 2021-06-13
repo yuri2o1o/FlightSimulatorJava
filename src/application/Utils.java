@@ -1,13 +1,20 @@
 package application;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import javafx.scene.Node;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Alert;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+
+import plugin.AnomalyDetectionAlgorithm;
 
 public class Utils {
 	/*
@@ -42,13 +49,44 @@ public class Utils {
 		getNodeByID("currentFlightTimeSlider").setDisable(disabAll);
 		getNodeByID("totalFlightTimeLabel").setDisable(disabAll);
 
-		getNodeByID("parameterListView1").setDisable(disabAll);
-		getNodeByID("parameterListView2").setDisable(disabAll);
+		getNodeByID("parameterListView").setDisable(disabAll);
+		getNodeByID("classListView").setDisable(disabAll);
 
 		//change color for joystick
 		if (disabAll)
 			((Circle)getNodeByID("joystickCircle")).setFill(Paint.valueOf("#9ea9b2"));
 		else
 			((Circle)getNodeByID("joystickCircle")).setFill(Paint.valueOf("#7ebcee"));
+	}
+	
+	public static void loadPlugin(String classname) {
+		// load class directory
+		URLClassLoader urlClassLoader = null;
+		try {
+			urlClassLoader = URLClassLoader.newInstance(new URL[] {
+			 new URL("file://" + System.getProperty("user.dir") + "\\bin")
+			});
+		} catch (MalformedURLException e) {
+			new Alert(Alert.AlertType.ERROR, "ERROR: Could not load detection plugin directory").showAndWait();
+			return;
+		}
+
+
+		Class<AnomalyDetectionAlgorithm> plugin = null;
+		try {
+			plugin = (Class<AnomalyDetectionAlgorithm>)(urlClassLoader.loadClass("plugin." + classname));
+		} catch (ClassNotFoundException e) {
+			new Alert(Alert.AlertType.ERROR, "ERROR: Could not load detection plugin").showAndWait();
+			return;
+		}
+
+		try {
+			Main.plugin = plugin.newInstance();
+			Main.plugin.learnNormal(new File("reg_flight.csv"));
+			Main.plugin.detect(new File(Main.conf.flight_data_csv));
+		} catch (InstantiationException | IllegalAccessException e) {
+			new Alert(Alert.AlertType.ERROR, "ERROR: Detection plugin failure").showAndWait();
+			return;
+		}
 	}
 }
