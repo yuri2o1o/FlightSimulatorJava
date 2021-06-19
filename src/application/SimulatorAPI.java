@@ -11,12 +11,13 @@ public interface SimulatorAPI {
 	public void loadFlightDataFromCSV(String filename) throws UnknownHostException, IOException;
 	public float getFlightParameter(String paramname);
 	public void setSimulationSpeed(float speedmuliplayer);
-	void sendFlightDataToSimulator();
-	void setCurrentFlightTime(int currenttimems);
-	int getFlightLength();
-	int getCurrentFlightTime();
+	public void sendFlightDataToSimulator();
+	public void setCurrentFlightTime(int currenttimems);
+	public int getFlightLength();
+	public int getCurrentFlightTime();
 	public String[] getFlightData();
 	public List<String> getFlightDataList();
 	public int getFlightDataIndexByMsTime(int mstime);
-	int getFlightParameterIndex(String paramname);
+	public int getFlightParameterIndex(String paramname);
+	public void startFlight();
 }

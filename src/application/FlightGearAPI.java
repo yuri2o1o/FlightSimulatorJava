@@ -10,6 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,8 +24,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+
 //Class that contains the functions as an API for communication with the FlightGear flight simulator
-public class FlightGearAPI implements SimulatorAPI {
+public class FlightGearAPI extends Observable implements SimulatorAPI {
 	public static final int defcommdelay = 50; //the default delay (in ms) for communication with the simulator
 	private SocketIO simin = null;
 
@@ -34,6 +40,8 @@ public class FlightGearAPI implements SimulatorAPI {
 
 	//simulation data (updates in real time - readonly)
 	private  List<FlightParam> flightdata = new ArrayList<>();
+	
+	private Timer flightimer = new Timer();
 
 	// Added for the controller to HS
 	public List<String> getFlightDataList()
@@ -44,7 +52,28 @@ public class FlightGearAPI implements SimulatorAPI {
 
 		 return flightdata;
 	}
-
+	
+	public void startFlight() 
+	{ 
+		System.out.println("Starting flight emulation...");
+		//use API to send flight data
+		try {
+			loadFlightDataFromCSV(Main.conf.flight_data_csv);
+			sendFlightDataToSimulator();
+		} catch (IOException e) {
+			new Alert(Alert.AlertType.ERROR, "ERROR: Could not send flight data XML to simulator").showAndWait();
+			return;
+		}
+		
+		//used for state updates, in order to reduce lag, just change every 100 ms, instead of every time there is an actual change
+		flightimer.scheduleAtFixedRate(new TimerTask() {
+	        @Override
+	        public void run() {
+	        	setChanged();
+	        	notifyObservers();
+	        }
+	    }, 0, 100);
+	}
 
 	/*
 	 * Reads flight parameters from socket into flightdata
@@ -155,6 +184,7 @@ public class FlightGearAPI implements SimulatorAPI {
 		datainthread.stop();
 		simin.close();
 		simulator.destroy();
+		flightimer.cancel();
 	}
 
 	/*

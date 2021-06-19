@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import application.FlightControls?>
 
-<fx:root type="HBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="application.JavaFXController">
+<fx:root type="HBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
   <children>
    <VBox>
       <children>

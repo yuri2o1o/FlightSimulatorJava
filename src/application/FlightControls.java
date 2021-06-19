@@ -9,6 +9,7 @@ public class FlightControls extends VBox {
 	public FlightControls() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FlightControls.fxml"));        
         fxmlLoader.setRoot(this);
+        fxmlLoader.setController(Main.view);
         try {
             fxmlLoader.load();
         } catch (IOException exception) {

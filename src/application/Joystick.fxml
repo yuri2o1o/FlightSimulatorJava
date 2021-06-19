@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import application.FlightControls?>
 
-<fx:root type="HBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="application.JavaFXController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="155.0">
+<fx:root type="HBox" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="140.0" prefWidth="155.0">
     <children>
        <Slider fx:id="throttleSlider" blockIncrement="0.1" disable="true" max="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="130.0" prefWidth="14.0">
           <HBox.margin>

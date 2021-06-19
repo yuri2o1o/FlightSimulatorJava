@@ -9,6 +9,7 @@ public class Gauges extends HBox {
 	public Gauges() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Gauges.fxml"));        
         fxmlLoader.setRoot(this);
+        fxmlLoader.setController(Main.view);
         try {
             fxmlLoader.load();
         } catch (IOException exception) {

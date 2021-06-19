@@ -9,6 +9,7 @@ public class Detector extends HBox {
 	public Detector() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Detector.fxml"));        
         fxmlLoader.setRoot(this);
+        fxmlLoader.setController(Main.view);
         try {
             fxmlLoader.load();
         } catch (IOException exception) {

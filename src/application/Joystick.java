@@ -9,6 +9,7 @@ public class Joystick extends HBox {
 	public Joystick() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Joystick.fxml"));
         fxmlLoader.setRoot(this);
+        fxmlLoader.setController(Main.view);
         try {
             fxmlLoader.load();
         } catch (IOException exception) {

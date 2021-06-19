@@ -19,6 +19,7 @@ public class Main extends Application {
 	public static Stage primaryStage;
 	public static Scene scene;
 	public static AnomalyDetectionAlgorithm plugin;
+	public static View view = new View();
 	
 	//javafx globals
 	public static boolean isTimeSliding = false;
@@ -44,22 +45,18 @@ public class Main extends Application {
 
 		//start JavaFX scene
 		System.out.println("Opening scene...");
-		//try {
+		try {
 			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("Layout.fxml"));
 			scene = new Scene(root,600,400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			view.bind();
 			primaryStage.setScene(scene);
 			primaryStage.setResizable(false);
 			primaryStage.show();
-			Utils.setDisabALL(true); //disable all buttons on startup before open
-
-			//so line charts don't display dots
-			((LineChart)Utils.getNodeByID("paramGraph1")).setCreateSymbols(false);
-			((LineChart)Utils.getNodeByID("paramGraph2")).setCreateSymbols(false);
-		//} catch(Exception e) {
-			//new Alert(Alert.AlertType.ERROR, "CRITICAL ERROR: Could not open scene").showAndWait();
-			//return;
-		//}
+		} catch(Exception e) {
+			new Alert(Alert.AlertType.ERROR, "CRITICAL ERROR: Could not open scene").showAndWait();
+			return;
+		}
 	}
 
 	@Override
