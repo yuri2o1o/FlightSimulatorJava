@@ -1,0 +1,2 @@
+@echo off
+"C:\Program Files\Java\jdk1.8.0_291\bin\javaw.exe" -Dfile.encoding=Cp1252 -classpath "bin;C:\Program Files (x86)\eclipse\plugins\org.eclipse.fx.ide.css.jfx8_2.4.0.201605112122.jar" application.Main

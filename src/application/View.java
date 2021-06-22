@@ -103,19 +103,7 @@ public class View implements Observer {
 		vm.addObserver(this);
 	}
 	
-	public void onClickOpen() {
-		//choose Flight CSV file
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open Flight CSV File");
-		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("CSV Files", "*.csv"));
-		File selectedFile = fileChooser.showOpenDialog(Main.primaryStage);
-		if (selectedFile == null) {
-			new Alert(Alert.AlertType.ERROR, "ERROR: Invalid Selected CSV File").showAndWait();
-			return;
-		}
-		Main.conf.flight_data_csv = selectedFile.getAbsolutePath();
-		Main.conf.playback_speed_multiplayer = 0; //start paused
-		
+	public void init() {
 		//start flight emulation
 		vm.startFlight();
 
@@ -187,6 +175,22 @@ public class View implements Observer {
 		classListView.getItems().addAll(new String[] { "SimpleAnomalyDetector", "ZScoreAlgo", "HybridAlgorithm" });
 		classListView.getSelectionModel().select(0);
 		onMouseClickedClassListView(); //update detection plugin to default
+	}
+	
+	public void onClickOpen() {
+		//choose Flight CSV file
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Flight CSV File");
+		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("CSV Files", "*.csv"));
+		File selectedFile = fileChooser.showOpenDialog(Main.primaryStage);
+		if (selectedFile == null) {
+			new Alert(Alert.AlertType.ERROR, "ERROR: Invalid Selected CSV File").showAndWait();
+			return;
+		}
+		Main.conf.flight_data_csv = selectedFile.getAbsolutePath();
+		Main.conf.playback_speed_multiplayer = 0; //start paused
+		
+		init();
 	}
 	
 

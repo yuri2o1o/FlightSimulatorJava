@@ -1,0 +1,13 @@
+Requirements:
+1. Have eclipse installed at "C:\Program Files (x86)\eclipse" (default install location)
+2. Have the javafx plugin installed in eclipse at "eclipse\plugins\org.eclipse.fx.ide.css.jfx8_2.4.0.201605112122.jar"
+3. Have java jdk1.8.0_291 installed at "C:\Program Files\Java\jdk1.8.0_291" (default install location)
+	Note: These paths can be changed by editing the "run.bat" file (in this folder)
+3. Have Flight Gear flight simulator version 2020.3.8 installed
+
+Setup:
+1. Edit config.xml - to configure the location of your FlightGear simulator (and other settings if needed)
+(2. Edit the paths in run.bat if needed)
+3. Change the default "reg_flight.csv" file to the regular flight you want the detection algorithym to study (if needed)
+4. Edit the "playback_small.xml" file to match your desired flight pattern (if needed)
+5. Run the program via the "run.bat" execution file
