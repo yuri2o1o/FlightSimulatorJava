@@ -5,12 +5,11 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
 
-import plugin.AnomalyDetectionAlgorithm;
+//import plugin.AnomalyDetectionAlgorithm;
 
 public class Main extends Application {
 	//main globals

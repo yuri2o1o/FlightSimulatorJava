@@ -13,7 +13,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.paint.Color;
-public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, AnomalyDetectionAlgorithm{
+public class SimpleAnomalyDetector implements AnomalyDetectionAlgorithm {
 	private ArrayList<CorrelatedFeatures> correlated;
 	public int steps = 0;
 	public List<AnomalyReport> reported;
@@ -30,7 +30,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 	{
 		return correlated;
 	}
-	public void learnNormal(TimeSeries ts)
+	public void learnNormalTs(TimeSeries ts)
 	{
 
 		float[] firstVal, secondVal;
@@ -87,8 +87,7 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 	}
 
 
-	@Override
-	public List<AnomalyReport> detect(TimeSeries ts) {
+	public List<AnomalyReport> detectTs(TimeSeries ts) {
 		timeS = ts;
 
 		int index1 = -1, index2 = -1;
@@ -191,18 +190,18 @@ public class SimpleAnomalyDetector implements TimeSeriesAnomalyDetector, Anomaly
 	public void learnNormal(File trainFile) {
 		// TODO Auto-generated method stub
 		TimeSeries ts = new TimeSeries(trainFile.toString());
-		learnNormal(ts);
+		learnNormalTs(ts);
 	}
 
 	@Override
 	public List<AnomalyReport> detect(File testFile) {
 		// TODO Auto-generated method stub
 		TimeSeries ts = new TimeSeries(testFile.toString());
-		return detect(ts);
+		return detectTs(ts);
 	}
 
 	@Override
-	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
+	public void drawOnGraph(Canvas canvas, String featureName, Integer timeStamp) {
 		// TODO Auto-generated method stub
 		Line l = new Line(0,0);
 		//draw the points

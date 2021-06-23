@@ -8,7 +8,7 @@ import java.util.List;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 
-public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
+public class HybridAlgorithm implements AnomalyDetectionAlgorithm {
 	private SimpleAnomalyDetector sad;//for alg 2
 	private ZScoreAlgo zsa;//for alg 1
 	private List<AnomalyReport> res;//final result
@@ -61,10 +61,10 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 		return -1;
 	}
 
-	public void learnNormal (File trainFile)//sends each TimeSeries file to learnNormal in it's specific algorithm
+	public void learnNormal(File trainFile)//sends each TimeSeries file to learnNormal in it's specific algorithm
 	{
 		mainTs = new TimeSeries(trainFile.toString());
-		sad.learnNormal(mainTs);
+		sad.learnNormalTs(mainTs);
 		for(int i = 0; i < mainTs.valueNames.size(); i++)
 		{
 			int res = findTheAlgo(mainTs.valueNames.get(i));
@@ -86,8 +86,8 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 		}
 		tsAlg1 = new TimeSeries(namesForAlg1,forAlg1);
 		tsAlg2 = new TimeSeries(namesForAlg2,forAlg2);
-		sad.learnNormal(tsAlg2);
-		zsa.learnNormal(tsAlg1);
+		sad.learnNormalTs(tsAlg2);
+		zsa.learnNormalTs(tsAlg1);
 		//creating the circles for welzl's algorithm
 		for(CorrelatedFeatures corr : sad.getCorrelated())
 			if(namesBetween.contains(corr.feature1) && namesBetween.contains(corr.feature2))
@@ -124,7 +124,7 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 
 	//draws on the JavaFX GUI's graph as a plugin to the program
 	@Override
-	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
+	public void drawOnGraph(Canvas canvas, String featureName, Integer timeStamp) {
 		if(findTheAlgo(featureName) == 1)
 			sad.drawOnGraph(canvas, featureName, timeStamp);
 		else if(findTheAlgo(featureName) == -1)

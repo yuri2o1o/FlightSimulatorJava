@@ -14,8 +14,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
-import plugin.AnomalyDetectionAlgorithm;
-
 public class Utils {
 	/*
 	 * Parses a time in ms to an HH:MM:SS format
@@ -70,16 +68,16 @@ public class Utils {
 			return;
 		}
 
-		Class<AnomalyDetectionAlgorithm> plugin = null;
+		Class<?> plugin = null;
 		try {
-			plugin = (Class<AnomalyDetectionAlgorithm>)(urlClassLoader.loadClass("plugin." + classname));
+			plugin = urlClassLoader.loadClass("plugin." + classname);
 		} catch (ClassNotFoundException e) {
 			new Alert(Alert.AlertType.ERROR, "ERROR: Could not load detection plugin").showAndWait();
 			return;
 		}
 
 		try {
-			Main.plugin = plugin.newInstance();
+			Main.plugin = new PluginLoader(plugin.newInstance());
 			Main.plugin.learnNormal(new File("reg_flight.csv"));
 			Main.plugin.detect(new File(Main.conf.flight_data_csv));
 		} catch (InstantiationException | IllegalAccessException e) {

@@ -44,15 +44,16 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 		float avg = calcAvg(ts,col, until);
 		return Math.abs(ts.values.get(col).get(until) - avg) / (float)Math.sqrt(StatLib.var(cutArray(ts,col,until)));
 	}
-
-	public void learnNormal (File trainFile)
+	
+	@Override
+	public void learnNormal(File trainFile)
 	{
 		//here we calculate Tx
 		TimeSeries ts = new TimeSeries(trainFile.toString());
-		learnNormal(ts);
+		learnNormalTs(ts);
 	}
 
-	public void learnNormal (TimeSeries ts)
+	public void learnNormalTs(TimeSeries ts)
 	{
 		//we fill the zscore matrix
 		for(int j = 0; j < ts.values.size(); j++)
@@ -77,14 +78,16 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 			txValues.add(max);
 		}
 	}
+	
 	//giving user option to detect with both csv file and timeseries object
+	@Override
 	public List<AnomalyReport> detect (File testFile)
 	{
 		TimeSeries ts = new TimeSeries(testFile.toString());
-		return detect(ts);
+		return detectTs(ts);
 	}
 
-	public List<AnomalyReport> detect (TimeSeries ts)
+	public List<AnomalyReport> detectTs(TimeSeries ts)
 	{
 		timeS = ts;
 		List<AnomalyReport> anomalies = new ArrayList<AnomalyReport>();
@@ -103,7 +106,7 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 	}
 	//function to draw on the JavaFX GUI - the graph drawing is a plugin to the program as well.
 	@Override
-	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
+	public void drawOnGraph(Canvas canvas, String featureName, Integer timeStamp) {
 		ArrayList<Point> points = new ArrayList<Point>();
 		for(int i = 0; i < timeStamp; i++)
 			points.add(new Point(allZscoreVals.get(timeS.getValueNames().indexOf(featureName)).get(i), i+1));

@@ -1,4 +1,4 @@
-package plugin;
+package application;
 
 import java.io.File;
 import java.util.List;
