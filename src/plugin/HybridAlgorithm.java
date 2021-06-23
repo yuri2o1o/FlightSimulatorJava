@@ -122,6 +122,7 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 		return res;
 	}
 
+	//draws on the JavaFX GUI's graph as a plugin to the program
 	@Override
 	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
 		if(findTheAlgo(featureName) == 1)
@@ -157,7 +158,7 @@ public class HybridAlgorithm implements AnomalyDetectionAlgorithm{
 				canvas.getGraphicsContext2D().strokeLine(ar.x % 200, ar.y % 200, ar.x % 200, ar.y % 200);
 		}
 	}
-	
+	//returns the most correlated feature to the one given in the parameter "feature"
 	@Override
 	public String getCorrelated(String feature) {
 		for (CorrelatedFeatures c : sad.getCorrelated()) {

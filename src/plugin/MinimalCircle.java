@@ -98,13 +98,13 @@ public class MinimalCircle {
 			return left.r <= right.r ? left : right;
 	}
 	
-	
+	//creates circle from two points
 	static Circle makeDiameter(Point a, Point b) {
 		Point c = new Point((a.x + b.x) / 2, (a.y + b.y) / 2);
 		return new Circle(c, Math.max(c.distance(a), c.distance(b)));
 	}
 	
-	
+	//creates circle from three points
 	static Circle makeCircumcircle(Point a, Point b, Point c) {
 		float ox = (Math.min(Math.min(a.x, b.x), c.x) + Math.max(Math.max(a.x, b.x), c.x)) / 2;
 		float oy = (Math.min(Math.min(a.y, b.y), c.y) + Math.max(Math.max(a.y, b.y), c.y)) / 2;

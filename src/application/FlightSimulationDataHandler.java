@@ -9,6 +9,10 @@ public class FlightSimulationDataHandler {
 	private float timecorrection = 0; //inner value used to convert times to match the sample rate
 	private int timejumpms = FlightGearAPI.defcommdelay; //the amount of ms to skip each iteration (used for flight speed change)
 	
+	/*
+	sets parameters - timejumpms is the new time to jump to after speed and time correction changes,
+	and flightlenms is the duration of the flight
+	*/
 	public FlightSimulationDataHandler(SocketIO nsimout, String[] nflightdata, int samplerate, float speedmultiplayer) {
 		simout = nsimout;
 		flightdata = nflightdata;
@@ -17,6 +21,7 @@ public class FlightSimulationDataHandler {
 		flightlenms = flightdata.length * samplerate;
 	}
 	
+	//returns index from the flight data according to given time in flight(in ms)
 	public int getFlightDataIndexByMsTime(long mstime) {
 		return (int)((mstime/FlightGearAPI.defcommdelay)*timecorrection);
 	}
@@ -33,8 +38,9 @@ public class FlightSimulationDataHandler {
 		}
 	}
 	
+	//setters and getters- 
 	public void setFlightSpeed(float speedmultiplayer) {
-		timejumpms = (int)(FlightGearAPI.defcommdelay * (speedmultiplayer*timecorrection));
+		timejumpms = (int)(FlightGearAPI.defcommdelay * (speedmultiplayer*timecorrection));//calculated by the same formula as used before
 	}
 	
 	public int getFlightLength() {
@@ -52,6 +58,6 @@ public class FlightSimulationDataHandler {
 	public String[] getFlightData() {
 		return flightdata;
 	}
-	
+	//closes the socket to the simulator
 	public void close() { simout.close(); }
 }

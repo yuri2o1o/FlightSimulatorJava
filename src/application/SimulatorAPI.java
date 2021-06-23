@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 
 //Interface for flight simulator communication
+//defines all functionality needed for a class to communicate with a flight simulator
+//in our case, the class FlightGearAPI implements this interface to connect and communicate to the FlightGear program
 public interface SimulatorAPI {
 	public void start() throws UnknownHostException, IOException, InterruptedException;
 	public void finalize();

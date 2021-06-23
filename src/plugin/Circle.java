@@ -36,12 +36,12 @@ final class Circle {
 		this.r = r;
 	}
 	
-	
+	//determines whether this circle contains the point p
 	public boolean contains(Point p) {
 		return c.distance(p) <= r * MULTIPLICATIVE_EPSILON;
 	}
 	
-	
+	//determines whether this circle contains all points in collection ps
 	public boolean contains(Collection<Point> ps) {
 		for (Point p : ps) {
 			if (!contains(p))
@@ -50,7 +50,7 @@ final class Circle {
 		return true;
 	}
 	
-	
+	//formatsa the circle to a string
 	public String toString() {
 		return String.format("Circle(x=%g, y=%g, r=%g)", c.x, c.y, r);
 	}

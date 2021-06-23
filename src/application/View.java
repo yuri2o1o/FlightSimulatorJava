@@ -63,6 +63,7 @@ public class View implements Observer {
 	NumberAxis paramCategoryAxis2;
 	Canvas anomalyCanvas;
 	
+	//binds the program's vals with the javaFX GUI's components
 	public void bind() {
 		//FlightControls
 		openButton = (Button)Utils.getNodeByID("openButton");
@@ -103,6 +104,7 @@ public class View implements Observer {
 		vm.addObserver(this);
 	}
 	
+	//starts connection between the simulator, Model's variables and GUI's components
 	public void init() {
 		//start flight emulation
 		vm.startFlight();
@@ -177,6 +179,7 @@ public class View implements Observer {
 		onMouseClickedClassListView(); //update detection plugin to default
 	}
 	
+	//opens flight csv file to read from and sets its settings
 	public void onClickOpen() {
 		//choose Flight CSV file
 		FileChooser fileChooser = new FileChooser();
@@ -193,52 +196,59 @@ public class View implements Observer {
 		init();
 	}
 	
-
+	//changes flight's speed and the right GUI's components accordingly
 	public void changeSpeedAndUpdateGUI(float speedmult) {
 		speedmult = Float.parseFloat((new DecimalFormat("0.00")).format(speedmult)); //round to 2 decimal places
 		speedMultTextfield.setText(speedmult + ""); //update speed text field
 		speedMultSlider.setValue((int)(speedmult * 100)); //update speed slider
 		Main.simcomm.setSimulationSpeed(speedmult); //set simulation speed
 	}
-
+	
+	//play the flight
 	public void onClickPlay()
 	{
 		changeSpeedAndUpdateGUI(1); //play by setting speed to 1
 	}
 
+	//pauses the flight
 	public void onClickPause()
 	{
 		changeSpeedAndUpdateGUI(0); //pause by setting speed to 0
 	}
 
+	//stops the flight - resets it to its start
 	public void onClickStop()
 	{
 		//stop by setting speed and current time to 0
 		onClickPause();
 		Main.simcomm.setCurrentFlightTime(0);
 	}
-
+	
+	//slows down speed to half
 	public void onClickSlow()
 	{
 		changeSpeedAndUpdateGUI(0.5f); //decrease speed
 	}
 
+	//double slows the speed to quarter
 	public void onClickSuperSlow()
 	{
 		changeSpeedAndUpdateGUI(0.25f); //dramatically decrease speed
 	}
 
+	//increases speed to 1.75 times the original
 	public void onClickFast()
 	{
 		changeSpeedAndUpdateGUI(1.75f); //increase speed
 	}
 
+	//increases speed to 4 times the original
 	public void onClickSuperFast()
 	{
 		changeSpeedAndUpdateGUI(4f); //dramatically increase speed
 	}
 	
-
+	//changes speed according to user input
 	public void onTextChangedMultField() {
 		try {
 			//parse the text and update the simulation speed
@@ -255,7 +265,8 @@ public class View implements Observer {
 		currentFlightTimeSlider.valueProperty().unbind();
 		Main.isTimeSliding = true;
 	}
-
+	
+	//updates the flight time in this function, after user presses the slider on function above
 	public void onMouseReleasedTimeSlider() {
 		Main.simcomm.setCurrentFlightTime((int)currentFlightTimeSlider.getValue()); //set flight time
 		currentFlightTimeSlider.valueProperty().bind(vm.currentFlightTime);
@@ -267,6 +278,7 @@ public class View implements Observer {
 	public void onMousePressedSpeedSlider() {
 		Main.isSpeedSliding = true;
 	}
+	//listens to the user's slider movements to know what value to update to
 	public void onMouseMovedSpeedSlider() {
 		speedMultSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -277,12 +289,13 @@ public class View implements Observer {
             }
 	    });
 	}
-
+	
+	//updates when slider is released
 	public void onMouseReleasedSpeedSlider() {
 		changeSpeedAndUpdateGUI(((float)(speedMultSlider.getValue()))/100); //set flight speed
 		Main.isSpeedSliding = false;
 	}
-
+	
 	public void onMouseClickedParameterListView() {
 		//update category axis label
 		Main.paramselected = true;

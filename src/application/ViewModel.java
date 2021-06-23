@@ -36,8 +36,10 @@ public class ViewModel extends Observable implements Observer {
 	public StringProperty pitchLabel = new SimpleStringProperty("0");
 	public StringProperty yawLabel = new SimpleStringProperty("0");
 	
+	//adds the viewModel to observe the model (MVVM)
 	public ViewModel() { m.addObserver(this); }
 	
+	//takes data from the Model and updates the data sent to the view accordingly
 	@Override
 	public void update(Observable o, Object arg) {
 		if (o != m)
@@ -75,6 +77,6 @@ public class ViewModel extends Observable implements Observer {
 			}
 		});
 	}
-	
+	//starts flight in Model
 	public void startFlight() { m.startFlight(); }
 }
