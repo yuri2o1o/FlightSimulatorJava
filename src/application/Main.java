@@ -26,6 +26,9 @@ public class Main extends Application {
 	public static boolean isSpeedSliding = false;
 	public static boolean paramselected = false;
 
+	/*
+	 starts the FlightGear program using its API, implemented from the SimulatorAPI interface 
+	 */
 	@Override
 	public void start(Stage nprimaryStage) throws IOException {
 		primaryStage = nprimaryStage;
@@ -59,12 +62,13 @@ public class Main extends Application {
 		}
 	}
 
+	//closing connection from the API to the simulator
 	@Override
 	public void stop(){
 		System.out.println("Stage is closing, finalizing...");
 	    try { simcomm.finalize(); } catch(Exception e) {}; //finalize when we close the stage
 	}
-
+	
 	public static void main(String[] args) throws Exception {
 		launch(args); //start program as JavaFX project
 	}

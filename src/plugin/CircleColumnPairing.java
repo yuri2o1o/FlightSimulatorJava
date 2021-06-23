@@ -1,5 +1,6 @@
 package plugin;
 
+//class to pair a circle and the features creating it together
 public class CircleColumnPairing {
 	public Circle c;
 	public String ft1,ft2;

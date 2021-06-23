@@ -9,7 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.paint.Color;
-
+//anomaly detection algorithm - Z-SCORE
 public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 	TimeSeries timeS;
 	List<Float> txValues;
@@ -18,6 +18,7 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 	{
 		txValues = new ArrayList<Float>();
 	}
+	//calaculates average of the feature in index col, from 0 to index until(current time in flight)
 	public float calcAvg(TimeSeries ts, int col, int until)//calculating the average of a specific feature from start to index "until"
 	{
 		float avg = 0;
@@ -76,6 +77,7 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 			txValues.add(max);
 		}
 	}
+	//giving user option to detect with both csv file and timeseries object
 	public List<AnomalyReport> detect (File testFile)
 	{
 		TimeSeries ts = new TimeSeries(testFile.toString());
@@ -99,6 +101,7 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 		}
 		return anomalies;
 	}
+	//function to draw on the JavaFX GUI - the graph drawing is a plugin to the program as well.
 	@Override
 	public void drawOnGraph(Canvas canvas, String featureName, int timeStamp) {
 		ArrayList<Point> points = new ArrayList<Point>();
@@ -111,6 +114,7 @@ public class ZScoreAlgo implements AnomalyDetectionAlgorithm {
 			canvas.getGraphicsContext2D().strokeLine(points.get(i).x % 200, points.get(i).y % 200, points.get(i+1).x % 200, points.get(i+1).y % 200);
 	}
 
+	//no "most correlative feature" in Z-SCORE so it returns itself
 	@Override
 	public String getCorrelated(String feature) {
 		return feature;

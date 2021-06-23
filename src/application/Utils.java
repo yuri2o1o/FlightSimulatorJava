@@ -27,11 +27,11 @@ public class Utils {
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return df.format((new Date(ms)));
 	}
-
+	//gets the right component from javaFX according to id given
 	public static Node getNodeByID(String id) {
 		return Main.scene.lookup("#" + id);
 	}
-
+	//sets all javaFX components' (buttons, sliders etc.) option for input to the boolean val given
 	public static void setDisabALL(boolean disabAll) {
 		getNodeByID("playButton").setDisable(disabAll);
 		getNodeByID("pauseButton").setDisable(disabAll);
@@ -59,6 +59,7 @@ public class Utils {
 			((Circle)getNodeByID("joystickCircle")).setFill(Paint.valueOf("#7ebcee"));
 	}
 	
+	//loads the anomaly detection algorithm as a plugin to the program and activates its functionality -learnNormal, detect
 	public static void loadPlugin(String classname) {
 		// load class directory
 		URLClassLoader urlClassLoader = null;

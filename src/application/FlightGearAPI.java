@@ -32,10 +32,10 @@ public class FlightGearAPI extends Observable implements SimulatorAPI {
 	public static final int defcommdelay = 50; //the default delay (in ms) for communication with the simulator
 	private SocketIO simin = null;
 
-	private Process simulator;
+	private Process simulator;//proxy process to communicate with the FlightGear simulator
 	private Thread datainthread;
 
-	private FlightSimulationDataHandler datahandler;
+	private FlightSimulationDataHandler datahandler;//variable that handles the data between the simulator and our program
 	private Thread dataoutthread;
 
 	//simulation data (updates in real time - readonly)
@@ -53,6 +53,7 @@ public class FlightGearAPI extends Observable implements SimulatorAPI {
 		 return flightdata;
 	}
 	
+	//starts the flight by loading it from the CSV file and sending the data to the simulator
 	public void startFlight() 
 	{ 
 		System.out.println("Starting flight emulation...");
@@ -230,6 +231,11 @@ public class FlightGearAPI extends Observable implements SimulatorAPI {
 		return 0;
 	}
 	
+	/*
+	 * Function to get a flight parameter's index by name (as written in the playback XML)
+	 * in: paramname - the name of the parameter
+	 * out: float - the index of the parameter from all flight data
+	 */
 	@Override
 	public int getFlightParameterIndex(String paramname) {
 		for (int i = 0; i < flightdata.size(); i++)
@@ -237,32 +243,39 @@ public class FlightGearAPI extends Observable implements SimulatorAPI {
 				return i;
 		return -1;
 	}
-
+	
+	//sets simulation's play speed 
 	@Override
 	public void setSimulationSpeed(float speedmuliplayer) {
 		datahandler.setFlightSpeed(speedmuliplayer);
 	}
 
+	//sets current time in flight (to jump to different parts of the flight)
 	@Override
 	public void setCurrentFlightTime(int currenttimems) {
 		datahandler.setCurrentFlightTime(currenttimems);
 	}
 
+	
+	//returns duration of flight
 	@Override
 	public int getFlightLength() {
 		return datahandler.getFlightLength();
 	}
 
+	//returns current time in the flight
 	@Override
 	public int getCurrentFlightTime() {
 		return datahandler.getCurrentFlightTime();
 	}
 
+	//reeturns all flight data
 	@Override
 	public String[] getFlightData() {
 		return datahandler.getFlightData();
 	}
 
+	//returns the right index from the data based on the time given(in ms)
 	@Override
 	public int getFlightDataIndexByMsTime(int mstime) {
 		return datahandler.getFlightDataIndexByMsTime(mstime);

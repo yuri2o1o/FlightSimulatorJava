@@ -13,7 +13,7 @@ public class SocketIO {
 	private Socket socket = null;
 	private DataInputStream input = null;
 	private DataOutputStream out = null;
-	
+	//opens socket for input and output communication
 	public SocketIO(Socket nsocket)
 	{
 		socket = nsocket;
@@ -66,7 +66,7 @@ public class SocketIO {
 			return "";
 		}
 	}
-	
+	//closes socket
 	public void close()
 	{
 		try {

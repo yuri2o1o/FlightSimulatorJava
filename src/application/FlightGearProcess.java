@@ -37,16 +37,19 @@ public class FlightGearProcess extends Process {
 		return flightgear.getErrorStream();
 	}
 
+	//waits for the simulator to stop
 	@Override
 	public int waitFor() throws InterruptedException {
 		return flightgear.waitFor();
 	}
 
+	//returns the exit value of the simulator
 	@Override
 	public int exitValue() {
 		return flightgear.exitValue();
 	}
 
+	//terminates the simulator's actions
 	@Override
 	public void destroy() {
 		flightgear.destroy();
