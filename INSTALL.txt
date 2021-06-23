@@ -6,7 +6,7 @@ Requirements:
 3. Have Flight Gear flight simulator version 2020.3.8 installed
 
 Setup:
-1. Edit config.xml - to configure the location of your FlightGear simulator (and other settings if needed)
+1. Edit config.xml - to configure the location of your FlightGear simulator and Plugin folder (and other settings if needed)
 (2. Edit the paths in run.bat if needed)
 3. Change the default "reg_flight.csv" file to the regular flight you want the detection algorithym to study (if needed)
 4. Edit the "playback_small.xml" file to match your desired flight pattern (if needed)

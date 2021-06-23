@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 public class Config {
 	//global parameters
 	public String simulator_path;
+	public String plugins_relative_path;
 	public String simulator_playback;
 	public String flight_data_csv;
 

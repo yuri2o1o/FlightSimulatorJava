@@ -64,14 +64,11 @@ public class Utils {
 		// load class directory
 		URLClassLoader urlClassLoader = null;
 		try {
-			urlClassLoader = URLClassLoader.newInstance(new URL[] {
-			 new URL("file://" + System.getProperty("user.dir") + "\\bin")
-			});
+			urlClassLoader = URLClassLoader.newInstance(new URL[] { new URL("file://" + System.getProperty("user.dir") + Main.conf.plugins_relative_path) });
 		} catch (MalformedURLException e) {
 			new Alert(Alert.AlertType.ERROR, "ERROR: Could not load detection plugin directory").showAndWait();
 			return;
 		}
-
 
 		Class<AnomalyDetectionAlgorithm> plugin = null;
 		try {

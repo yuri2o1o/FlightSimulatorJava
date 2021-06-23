@@ -9,6 +9,13 @@
    </void>
   </void>
   <void class="application.Config" method="getField">
+   <string>plugins_relative_path</string>
+   <void method="set">
+    <object idref="Config0"/>
+    <string>\bin</string>
+   </void>
+  </void>
+  <void class="application.Config" method="getField">
    <string>simulator_playback</string>
    <void method="set">
     <object idref="Config0"/>
